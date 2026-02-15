@@ -28,9 +28,9 @@ export const movies: Movie[] = [
     cast: [
       { name: "Marlon Brando", character: "Vito Corleone", profilePath: "/iyO183LVAJ0I4ZkNibINPjfAjCP.jpg" },
       { name: "Al Pacino", character: "Michael Corleone", profilePath: "/m8HAAjq1T75JypKk0v1FFQn4ysZ.jpg" },
-      { name: "James Caan", character: "Sonny Corleone", profilePath: "/v3flJtQEyczxENi29yJyvnN6Lvt.jpg" },
+      { name: "James Caan", character: "Sonny Corleone", profilePath: "/v3flJtQEyczxENi29yJyvnN6LVt.jpg" },
       { name: "Robert Duvall", character: "Tom Hagen", profilePath: "/ybMmK25h4IVtfE7qrnlVp47RQlh.jpg" },
-      { name: "Diane Keaton", character: "Kay Adams", profilePath: null },
+      { name: "Diane Keaton", character: "Kay Adams", profilePath: "/A8B3BsFgbmw2WEmJuQX38qeU9eR.jpg" },
     ],
     writers: ["Mario Puzo", "Francis Ford Coppola"], genre: "Drama",
     tagline: "An offer you can't refuse.",
@@ -45,12 +45,12 @@ export const movies: Movie[] = [
       { name: "Samuel L. Jackson", character: "Jules Winnfield", profilePath: "/AiAYAqwpM5xmiFrAIeQvUXDCVvo.jpg" },
       { name: "Uma Thurman", character: "Mia Wallace", profilePath: "/sBgAZWi3o4FsnaTvnTNtK6jpQcF.jpg" },
       { name: "Bruce Willis", character: "Butch Coolidge", profilePath: "/w3aXr1e7gQCn8MSp1vW4sXHn99P.jpg" },
-      { name: "Tim Roth", character: "Pumpkin", profilePath: null },
+      { name: "Tim Roth", character: "Pumpkin", profilePath: "/qSizF2i9gz6c6DbAC5RoIq8sVqX.jpg" },
     ],
     writers: ["Quentin Tarantino", "Roger Avary"], genre: "Thriller",
     tagline: "You won't know the facts until you've seen the fiction.",
     plotKeywords: ["hitman", "briefcase", "dance", "adrenaline", "nonlinear"],
-    posterUrl: `${POSTER}/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg`
+    posterUrl: `${POSTER}/vQWk5YBFWF4bZaofAbv0tShwBvQ.jpg`
   },
   {
     id: 3, title: "The Shawshank Redemption", year: 1994, director: "Frank Darabont",
@@ -64,7 +64,7 @@ export const movies: Movie[] = [
     writers: ["Stephen King", "Frank Darabont"], genre: "Drama",
     tagline: "Fear can hold you prisoner. Hope can set you free.",
     plotKeywords: ["prison", "escape", "friendship", "hope", "corruption"],
-    posterUrl: `${POSTER}/9cjIGRiQZ1kHFsURYClYmxFOGch.jpg`
+    posterUrl: `${POSTER}/9cqNxx0GxF0bflZmeSMuL5tnGzr.jpg`
   },
   {
     id: 4, title: "Jaws", year: 1975, director: "Steven Spielberg",
@@ -78,7 +78,7 @@ export const movies: Movie[] = [
     writers: ["Peter Benchley", "Carl Gottlieb"], genre: "Thriller",
     tagline: "Don't go in the water.",
     plotKeywords: ["shark", "beach", "island", "ocean", "summer"],
-    posterUrl: `${POSTER}/lxM6kqilAdpdhqUl2biYp5frUxE.jpg`
+    posterUrl: `${POSTER}/tjbLSFwi0I3phZwh8zoHWNfbsEp.jpg`
   },
   {
     id: 5, title: "Alien", year: 1979, director: "Ridley Scott",
@@ -87,7 +87,7 @@ export const movies: Movie[] = [
       { name: "Sigourney Weaver", character: "Ripley", profilePath: "/wTSnfktNBLd6kwQxgvkqYw6vEon.jpg" },
       { name: "Tom Skerritt", character: "Dallas", profilePath: "/oWFCyBLm1lsbsbT5Nmx3SPMaqFZ.jpg" },
       { name: "John Hurt", character: "Kane", profilePath: "/bjNSzt1d7uK3q5PbtFXUJrRt4qg.jpg" },
-      { name: "Ian Holm", character: "Ash", profilePath: null },
+      { name: "Ian Holm", character: "Ash", profilePath: "/cOJDgvgj4nMec6Inzj1H5nugTO5.jpg" },
     ],
     writers: ["Dan O'Bannon", "Ronald Shusett"], genre: "Sci-Fi",
     tagline: "In space no one can hear you scream.",
@@ -120,7 +120,7 @@ export const movies: Movie[] = [
     writers: ["Robert Zemeckis", "Bob Gale"], genre: "Sci-Fi",
     tagline: "He's the only kid ever to get into trouble before he was born.",
     plotKeywords: ["time travel", "DeLorean", "1955", "high school", "lightning"],
-    posterUrl: `${POSTER}/fNOH9f1aA7XRTzl1sAOx9iF553Q.jpg`
+    posterUrl: `${POSTER}/vN5B5WgYscRGcQpVhHl6p9DDTP0.jpg`
   },
   {
     id: 8, title: "Goodfellas", year: 1990, director: "Martin Scorsese",
@@ -134,7 +134,7 @@ export const movies: Movie[] = [
     writers: ["Nicholas Pileggi", "Martin Scorsese"], genre: "Drama",
     tagline: "Three decades of life in the Mafia.",
     plotKeywords: ["gangster", "betrayal", "witness protection", "heist", "cocaine"],
-    posterUrl: `${POSTER}/aKuFiU82s5ISJpGZp7YkIr3kCUd.jpg`
+    posterUrl: `${POSTER}/9OkCLM73MIU2CrKZbqiT8Ln1wY2.jpg`
   },
   {
     id: 9, title: "The Matrix", year: 1999, director: "Lana Wachowski",
@@ -148,7 +148,7 @@ export const movies: Movie[] = [
     writers: ["Lana Wachowski", "Lilly Wachowski"], genre: "Sci-Fi",
     tagline: "Welcome to the Real World.",
     plotKeywords: ["simulation", "chosen one", "martial arts", "red pill", "machines"],
-    posterUrl: `${POSTER}/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg`
+    posterUrl: `${POSTER}/p96dm7sCMn4VYAStA6siNz30G1r.jpg`
   },
   {
     id: 10, title: "Psycho", year: 1960, director: "Alfred Hitchcock",
@@ -176,7 +176,7 @@ export const movies: Movie[] = [
     writers: ["Lawrence Kasdan", "George Lucas"], genre: "Action",
     tagline: "The Return of the Great Adventure.",
     plotKeywords: ["archaeologist", "ark", "Nazis", "adventure", "Egypt"],
-    posterUrl: `${POSTER}/ceG9VzoRAVGwivFU403Wc0AHAb0.jpg`
+    posterUrl: `${POSTER}/ceG9VzoRAVGwivFU403Wc3AHRys.jpg`
   },
   {
     id: 12, title: "The Shining", year: 1980, director: "Stanley Kubrick",
@@ -190,7 +190,7 @@ export const movies: Movie[] = [
     writers: ["Stephen King", "Stanley Kubrick"], genre: "Horror",
     tagline: "A masterpiece of modern horror.",
     plotKeywords: ["hotel", "isolation", "twins", "axe", "winter"],
-    posterUrl: `${POSTER}/nRj5511mZdTl4saWEPoj9QroTIu.jpg`
+    posterUrl: `${POSTER}/uAR0AWqhQL1hQa69UDEbb2rE5Wx.jpg`
   },
   {
     id: 13, title: "Forrest Gump", year: 1994, director: "Robert Zemeckis",
@@ -204,7 +204,7 @@ export const movies: Movie[] = [
     writers: ["Winston Groom", "Eric Roth"], genre: "Drama",
     tagline: "Life is like a box of chocolates.",
     plotKeywords: ["running", "Vietnam", "shrimp", "ping pong", "feather"],
-    posterUrl: `${POSTER}/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg`
+    posterUrl: `${POSTER}/saHP97rTPS5eLmrLQEcANmKrsFl.jpg`
   },
   {
     id: 14, title: "Die Hard", year: 1988, director: "John McTiernan",
@@ -218,7 +218,7 @@ export const movies: Movie[] = [
     writers: ["Jeb Stuart", "Steven E. de Souza"], genre: "Action",
     tagline: "Forty stories of sheer adventure!",
     plotKeywords: ["skyscraper", "hostage", "Christmas", "barefoot", "terrorists"],
-    posterUrl: `${POSTER}/yFihWxQcmqcaBR31QM6Y8gT6aYV.jpg`
+    posterUrl: `${POSTER}/7Bjd8kfmDSOzpmhySpEhkUyK2oH.jpg`
   },
   {
     id: 15, title: "Ghostbusters", year: 1984, director: "Ivan Reitman",
@@ -232,7 +232,7 @@ export const movies: Movie[] = [
     writers: ["Dan Aykroyd", "Harold Ramis"], genre: "Comedy",
     tagline: "Who you gonna call?",
     plotKeywords: ["ghosts", "proton pack", "New York", "Stay Puft", "containment"],
-    posterUrl: `${POSTER}/6AUBjoDiudOFkNfMgLgMvEiEjGF.jpg`
+    posterUrl: `${POSTER}/7E8nLijS9AwwUEPu2oFYOVKhdFA.jpg`
   },
   {
     id: 16, title: "Blade Runner", year: 1982, director: "Ridley Scott",
@@ -241,7 +241,7 @@ export const movies: Movie[] = [
       { name: "Harrison Ford", character: "Rick Deckard", profilePath: "/zVnHagUvXkR2StdOtquEwsiwSVt.jpg" },
       { name: "Rutger Hauer", character: "Roy Batty", profilePath: "/45kp2fmVWloddrz7LF94MmT4tWf.jpg" },
       { name: "Sean Young", character: "Rachael", profilePath: "/yfJADYt6xYPpg1g7Z7TTW0bcL2s.jpg" },
-      { name: "Daryl Hannah", character: "Pris", profilePath: null },
+      { name: "Daryl Hannah", character: "Pris", profilePath: "/5FllFmoiaru7tjXJ6Orc11OpQcw.jpg" },
     ],
     writers: ["Hampton Fancher", "David Peoples"], genre: "Sci-Fi",
     tagline: "Man has made his match... now it's his problem.",
@@ -250,17 +250,17 @@ export const movies: Movie[] = [
   },
   {
     id: 17, title: "The Exorcist", year: 1973, director: "William Friedkin",
-    directorPhoto: null,
+    directorPhoto: `${IMG}/c70AdZsqOsSjEuUp37W5HPYeeKw.jpg`,
     cast: [
-      { name: "Ellen Burstyn", character: "Chris MacNeil", profilePath: null },
-      { name: "Max von Sydow", character: "Father Merrin", profilePath: null },
-      { name: "Linda Blair", character: "Regan", profilePath: null },
-      { name: "Jason Miller", character: "Father Karras", profilePath: null },
+      { name: "Ellen Burstyn", character: "Chris MacNeil", profilePath: "/uEHZoAtCnGCXvQDHe3s3DWW2G1c.jpg" },
+      { name: "Max von Sydow", character: "Father Merrin", profilePath: "/u16BsGyT6v9yuO7wWAF62NayDth.jpg" },
+      { name: "Linda Blair", character: "Regan", profilePath: "/3jswDdLDsmSAO4ZtVPwyKAp6D5d.jpg" },
+      { name: "Jason Miller", character: "Father Karras", profilePath: "/4dwatFQJnBvS51SjsqnG4ZC4ItZ.jpg" },
     ],
     writers: ["William Peter Blatty"], genre: "Horror",
     tagline: "Something almost beyond comprehension is happening to a girl on this street.",
     plotKeywords: ["possession", "demon", "priest", "Georgetown", "pea soup"],
-    posterUrl: `${POSTER}/4ucLGcXVVSVnsfkGtbLY4XAius8.jpg`
+    posterUrl: `${POSTER}/5x0CeVHJI8tcDx8tUUwYHQSNILq.jpg`
   },
   {
     id: 18, title: "Groundhog Day", year: 1993, director: "Harold Ramis",
@@ -274,7 +274,7 @@ export const movies: Movie[] = [
     writers: ["Danny Rubin", "Harold Ramis"], genre: "Comedy",
     tagline: "He's having the worst day of his life... over, and over...",
     plotKeywords: ["time loop", "weatherman", "Pennsylvania", "February", "self-improvement"],
-    posterUrl: `${POSTER}/gCgt1WARPdyGnbFSoHsMfRNL0Kb.jpg`
+    posterUrl: `${POSTER}/gCgt1WARPZaXnq523ySQEUKinCs.jpg`
   },
   {
     id: 19, title: "Fight Club", year: 1999, director: "David Fincher",
@@ -302,7 +302,7 @@ export const movies: Movie[] = [
     writers: ["Michael Crichton", "David Koepp"], genre: "Sci-Fi",
     tagline: "An adventure 65 million years in the making.",
     plotKeywords: ["dinosaurs", "theme park", "DNA", "island", "chaos theory"],
-    posterUrl: `${POSTER}/oU7Oez2kCMptmBjS7ISwLuuA46l.jpg`
+    posterUrl: `${POSTER}/maFjKnJ62hDQ9E66dKqDZgbUy0H.jpg`
   },
   {
     id: 21, title: "The Big Lebowski", year: 1998, director: "Joel Coen",
@@ -316,7 +316,7 @@ export const movies: Movie[] = [
     writers: ["Joel Coen", "Ethan Coen"], genre: "Comedy",
     tagline: "Her life was in their hands. Now her toe is in the mail.",
     plotKeywords: ["bowling", "rug", "kidnapping", "White Russian", "nihilists"],
-    posterUrl: `${POSTER}/9mprbw31MGdd66LR0AQKaDKEFOE.jpg`
+    posterUrl: `${POSTER}/9mprbw31MGdd66LR0AQKoDMoFRv.jpg`
   },
   {
     id: 22, title: "Terminator 2: Judgment Day", year: 1991, director: "James Cameron",
@@ -330,7 +330,7 @@ export const movies: Movie[] = [
     writers: ["James Cameron", "William Wisher"], genre: "Action",
     tagline: "It's nothing personal.",
     plotKeywords: ["cyborg", "future", "liquid metal", "Skynet", "nuclear"],
-    posterUrl: `${POSTER}/weVXMD5QBGeQil4HEATZqAkXvLi.jpg`
+    posterUrl: `${POSTER}/jFTVD4XoWQTcg7wdyJKa8PEds5q.jpg`
   },
   {
     id: 23, title: "Casablanca", year: 1942, director: "Michael Curtiz",
@@ -344,7 +344,7 @@ export const movies: Movie[] = [
     writers: ["Julius Epstein", "Philip Epstein"], genre: "Drama",
     tagline: "They had a date with fate in Casablanca!",
     plotKeywords: ["wartime", "nightclub", "letters of transit", "love triangle", "Morocco"],
-    posterUrl: `${POSTER}/5K7cOHoay2mZusSLezBOY0Qxh8a.jpg`
+    posterUrl: `${POSTER}/lGCEKlJo2CnWydQj7aamY7s1S7Q.jpg`
   },
   {
     id: 24, title: "Mad Max: Fury Road", year: 2015, director: "George Miller",
@@ -358,7 +358,7 @@ export const movies: Movie[] = [
     writers: ["George Miller", "Brendan McCarthy"], genre: "Action",
     tagline: "What a lovely day!",
     plotKeywords: ["desert", "chase", "war rig", "wasteland", "water"],
-    posterUrl: `${POSTER}/8tZYtuWezp8JbcsvHYO0O46tFBO.jpg`
+    posterUrl: `${POSTER}/hA2ple9q4qnwxp3hKVNhroipsir.jpg`
   },
   {
     id: 25, title: "Get Out", year: 2017, director: "Jordan Peele",
@@ -372,7 +372,7 @@ export const movies: Movie[] = [
     writers: ["Jordan Peele"], genre: "Horror",
     tagline: "Just because you're invited, doesn't mean you're welcome.",
     plotKeywords: ["hypnosis", "sunken place", "suburb", "deer", "teacup"],
-    posterUrl: `${POSTER}/qGZIJIB0FU2sMBkNtvgTdPGhcoT.jpg`
+    posterUrl: `${POSTER}/tFXcEccSQMf3lfhfXKSU9iRBpa3.jpg`
   },
   {
     id: 26, title: "The Princess Bride", year: 1987, director: "Rob Reiner",
@@ -381,12 +381,12 @@ export const movies: Movie[] = [
       { name: "Cary Elwes", character: "Westley", profilePath: "/9UszBdQJ9PmyBydIeIBxlStozhW.jpg" },
       { name: "Robin Wright", character: "Buttercup", profilePath: "/d3rIv0y2p0jMsQ7ViR7O1606NZa.jpg" },
       { name: "Mandy Patinkin", character: "Inigo Montoya", profilePath: "/1PeZ6roZvkcoyZZbvoSIWTgGe3a.jpg" },
-      { name: "Wallace Shawn", character: "Vizzini", profilePath: null },
+      { name: "Wallace Shawn", character: "Vizzini", profilePath: "/wVaM1WlFKDce4esThwL4XtNLhOe.jpg" },
     ],
     writers: ["William Goldman"], genre: "Comedy",
     tagline: "She gets kidnapped. He gets killed. But it all ends up okay.",
     plotKeywords: ["true love", "sword fight", "pirate", "miracle", "inconceivable"],
-    posterUrl: `${POSTER}/gpMV0fWNgQlchmIYMKEwCzFmJmE.jpg`
+    posterUrl: `${POSTER}/2FC9L9MrjBoGHYjYZjdWQdopVYb.jpg`
   },
   {
     id: 27, title: "Inception", year: 2010, director: "Christopher Nolan",
@@ -400,7 +400,7 @@ export const movies: Movie[] = [
     writers: ["Christopher Nolan"], genre: "Sci-Fi",
     tagline: "Your mind is the scene of the crime.",
     plotKeywords: ["dreams", "layers", "totem", "limbo", "spinning top"],
-    posterUrl: `${POSTER}/edv5CZvWj09upOsy2Y6IwDhK8bt.jpg`
+    posterUrl: `${POSTER}/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg`
   },
   {
     id: 28, title: "Ferris Bueller's Day Off", year: 1986, director: "John Hughes",
@@ -414,7 +414,7 @@ export const movies: Movie[] = [
     writers: ["John Hughes"], genre: "Comedy",
     tagline: "One man's struggle to take it easy.",
     plotKeywords: ["school", "skip day", "Ferrari", "Chicago", "fourth wall"],
-    posterUrl: `${POSTER}/9LTQMiSMnhABBsjfhGMVer4wEfF.jpg`
+    posterUrl: `${POSTER}/9LTQNCvoLsKXP0LtaKAaYVtRaQL.jpg`
   },
   {
     id: 29, title: "No Country for Old Men", year: 2007, director: "Joel Coen",
@@ -428,7 +428,7 @@ export const movies: Movie[] = [
     writers: ["Joel Coen", "Ethan Coen"], genre: "Thriller",
     tagline: "There are no clean getaways.",
     plotKeywords: ["coin toss", "desert", "money", "cattle gun", "fate"],
-    posterUrl: `${POSTER}/bj1v6YKF8yHqA489GFfPC6FJR0C.jpg`
+    posterUrl: `${POSTER}/6d5XOczc226jECq0LIX0siKtgHR.jpg`
   },
   {
     id: 30, title: "Parasite", year: 2019, director: "Bong Joon-ho",
