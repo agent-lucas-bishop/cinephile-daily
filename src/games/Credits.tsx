@@ -82,18 +82,6 @@ export function CreditsGame({ movie, state, update }: Props) {
       display: 'flex',
       flexDirection: 'column',
     }}>
-      {/* Back link */}
-      <div style={{
-        padding: '8px 0',
-        fontFamily: "'Bebas Neue', sans-serif",
-        fontSize: '0.75rem',
-        letterSpacing: '0.2em',
-        color: 'var(--text-muted)',
-        cursor: 'pointer',
-      }} onClick={() => window.history.back()}>
-        ← RETURN TO DOSSIER
-      </div>
-
       {/* Main cream card with PaperCard styling */}
       <div style={{
         position: 'relative',
@@ -115,7 +103,7 @@ export function CreditsGame({ movie, state, update }: Props) {
         }} />
 
         {/* Header row: poster thumbnail + case info + search */}
-        <div style={{ display: 'flex', gap: 12, marginBottom: 16, position: 'relative', zIndex: 10 }}>
+        <div style={{ display: 'flex', gap: 12, marginBottom: 16, position: 'relative', zIndex: 100 }}>
           {/* Blurred poster thumbnail */}
           <div style={{
             width: isMobile ? 70 : 90,
