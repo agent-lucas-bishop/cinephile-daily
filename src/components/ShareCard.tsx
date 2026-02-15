@@ -43,26 +43,24 @@ export function ShareCard({ state, streaks, allDone }: ShareCardProps) {
   const isMobile = useIsMobile();
   const gs = state.games;
 
-  const handleShare = useCallback(async () => {
+  const handleNativeShare = useCallback(async () => {
     const text = shareText(gs, streaks);
-
-    // Mobile: try native share sheet first
-    if (isMobile && navigator.share) {
+    if (navigator.share) {
       try {
         await navigator.share({ text });
-        return;
       } catch {
-        // User cancelled — fall through to copy
+        // User cancelled
       }
     }
+  }, [gs, streaks]);
 
-    // Desktop (or mobile fallback): copy to clipboard
+  const handleCopy = useCallback(async () => {
+    const text = shareText(gs, streaks);
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     } catch {
-      // Last resort: select-all fallback
       const ta = document.createElement('textarea');
       ta.value = text;
       document.body.appendChild(ta);
@@ -72,34 +70,61 @@ export function ShareCard({ state, streaks, allDone }: ShareCardProps) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     }
-  }, [gs, streaks, isMobile]);
+  }, [gs, streaks]);
 
   return (
     <div>
-      {/* Share button or incomplete message */}
+      {/* Share button(s) or incomplete message */}
       {allDone ? (
-        <button
-          onClick={handleShare}
-          style={{
-            width: '100%',
-            marginTop: 16,
-            padding: '14px 20px',
-            fontFamily: "'Bebas Neue', sans-serif",
-            fontSize: '1rem',
-            letterSpacing: '0.2em',
-            background: copied ? '#4A8B5C' : '#C5A059',
-            color: copied ? '#fff' : '#0D0A07',
-            border: 'none',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 10,
-            transition: 'background 0.3s, color 0.3s',
-          }}
-        >
-          {copied ? '✓ COPIED TO CLIPBOARD' : '↗ SHARE RESULTS'}
-        </button>
+        <div style={{
+          display: 'flex',
+          gap: 10,
+          marginTop: 16,
+        }}>
+          {isMobile && (
+            <button
+              onClick={handleNativeShare}
+              style={{
+                flex: 1,
+                padding: '14px 20px',
+                fontFamily: "'Bebas Neue', sans-serif",
+                fontSize: '1rem',
+                letterSpacing: '0.2em',
+                background: '#C5A059',
+                color: '#0D0A07',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 10,
+              }}
+            >
+              ↗ SHARE
+            </button>
+          )}
+          <button
+            onClick={handleCopy}
+            style={{
+              flex: 1,
+              padding: '14px 20px',
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: '1rem',
+              letterSpacing: '0.2em',
+              background: copied ? '#4A8B5C' : (isMobile ? '#1A1A1A' : '#C5A059'),
+              color: copied ? '#fff' : (isMobile ? '#F4F1EA' : '#0D0A07'),
+              border: isMobile ? '1px solid #333' : 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 10,
+              transition: 'background 0.3s, color 0.3s',
+            }}
+          >
+            {copied ? '✓ COPIED' : '📋 COPY'}
+          </button>
+        </div>
       ) : (
         <div style={{
           marginTop: 16,
