@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useDailyPuzzle } from '../hooks/useDailyPuzzle';
@@ -6,6 +5,7 @@ import { useGameState } from '../hooks/useGameState';
 import { getAllGameStreaks } from '../utils/storage';
 import { useIsMobile } from '../hooks/useMediaQuery';
 import { LoadingScreen } from '../components/LoadingScreen';
+import { ShareCard } from '../components/ShareCard';
 
 const NOISE_SVG = `data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E`;
 
@@ -25,7 +25,6 @@ export function Home() {
   const allDone = gs.credits.completed && gs.poster.completed && gs.year.completed;
   const isMobile = useIsMobile();
   const navigate = useNavigate();
-  const [copied, setCopied] = useState(false);
 
   if (loading) return <LoadingScreen />;
 
@@ -42,25 +41,6 @@ export function Home() {
   function formatDate(): string {
     const d = new Date();
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  }
-
-  function handleShare() {
-    const lines = [
-      `🎬 Cinéphile Daily — ${formatDate()}`,
-      '',
-      ...games.map(g => {
-        const s = gs[g.key];
-        return `${g.emoji} ${g.title}: ${s.score}/5 ${buildEmojiRow(s.score)}`;
-      }),
-      '',
-      `Total: ${totalScore}/15 | 🔥 Streaks: ${streaks.credits.streak}/${streaks.poster.streak}/${streaks.year.streak}`,
-      '',
-      'Play at cinephile-daily.vercel.app',
-    ];
-    navigator.clipboard.writeText(lines.join('\n')).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
   }
 
   return (
@@ -256,25 +236,8 @@ export function Home() {
                 </p>
               </div>
 
-              {/* Share button */}
-              <button
-                onClick={handleShare}
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  fontFamily: "'Bebas Neue', sans-serif",
-                  fontSize: '1rem',
-                  letterSpacing: '0.2em',
-                  background: COLORS.ink,
-                  color: COLORS.paper,
-                  border: 'none',
-                  cursor: 'pointer',
-                  marginBottom: 8,
-                  transition: 'background 0.2s',
-                }}
-              >
-                {copied ? '✓ COPIED TO CLIPBOARD' : '📋 SHARE RESULTS'}
-              </button>
+              {/* Share buttons */}
+              <ShareCard state={state} streaks={streaks} />
 
               <p style={{
                 fontFamily: "'Cormorant Garamond', serif",
