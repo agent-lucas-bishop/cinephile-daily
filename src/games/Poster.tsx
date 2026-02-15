@@ -75,170 +75,239 @@ export function PosterGame({ movie, state, update }: Props) {
         ← RETURN TO DOSSIER
       </div>
 
-      {/* Large blurred poster */}
+      {/* Darkroom poster area */}
       <div style={{
         position: 'relative',
         margin: '0 auto',
         maxWidth: isMobile ? '85%' : 380,
         width: '100%',
-        border: '3px solid #333',
-        background: '#0D0A07',
-        overflow: 'hidden',
+        background: '#0a0a0a',
+        padding: isMobile ? 12 : 16,
+        border: '1px solid #333',
         boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+        overflow: 'hidden',
       }}>
-        <img
-          src={movie.posterUrl}
-          alt="Movie poster"
-          style={{
-            width: '100%',
-            display: 'block',
-            filter: `blur(${gs.completed ? 0 : blur}px)`,
-            transition: 'filter 0.6s ease',
-            transform: 'scale(1.1)',
-          }}
-        />
+        {/* Darkroom red light effect */}
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px)',
           pointerEvents: 'none',
+          background: 'rgba(139, 0, 0, 0.1)',
+          mixBlendMode: 'overlay',
+          zIndex: 2,
         }} />
+
+        {/* Status dots */}
+        <div style={{
+          position: 'absolute',
+          top: 8,
+          left: 8,
+          zIndex: 3,
+          display: 'flex',
+          gap: 4,
+        }}>
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} style={{
+              width: 6,
+              height: 6,
+              borderRadius: '50%',
+              background: i < round ? '#8B0000' : 'rgba(255,80,80,0.4)',
+              transition: 'background 0.3s',
+            }} />
+          ))}
+        </div>
+
+        <div style={{
+          overflow: 'hidden',
+          border: '3px solid #333',
+          background: '#0D0A07',
+          position: 'relative',
+        }}>
+          <img
+            src={movie.posterUrl}
+            alt="Movie poster"
+            style={{
+              width: '100%',
+              display: 'block',
+              filter: `blur(${gs.completed ? 0 : blur}px) grayscale(${gs.completed ? 0 : Math.max(0, 100 - round * 20)}%) contrast(1.2)`,
+              transition: 'filter 0.6s ease',
+              transform: 'scale(1.1)',
+            }}
+          />
+          {/* Developing liquid gradient */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.3))',
+            pointerEvents: 'none',
+          }} />
+          {/* Scanline overlay */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px)',
+            pointerEvents: 'none',
+          }} />
+        </div>
       </div>
 
-      {/* Cream card below */}
+      {/* Cream card below with PaperCard styling */}
       <div style={{
+        position: 'relative',
         background: 'var(--cream)',
         border: '2px solid var(--cream-dark)',
         padding: isMobile ? '16px' : '24px',
         marginTop: 16,
+        boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
+        overflow: 'hidden',
       }}>
-        <h2 style={{
-          fontFamily: "'Playfair Display', Georgia, serif",
-          fontSize: isMobile ? '1.4rem' : '1.8rem',
-          color: '#6B1D2A',
-          fontWeight: 700,
-          fontStyle: 'italic',
-          margin: 0,
-        }}>
-          Visual Decryption
-        </h2>
-        <p style={{
-          fontFamily: "'Bebas Neue', sans-serif",
-          fontSize: '0.6rem',
-          letterSpacing: '0.25em',
-          color: '#666',
-          margin: '2px 0 12px',
-        }}>
-          IDENTIFY FILM FROM RECOVERED ASSETS
-        </p>
+        {/* Decorative double-line border inset */}
+        <div style={{
+          position: 'absolute',
+          inset: isMobile ? 8 : 12,
+          border: '2px double rgba(26,26,26,0.2)',
+          pointerEvents: 'none',
+        }} />
 
-        {/* Gold divider */}
-        <div style={{ height: 2, background: '#8B6914', marginBottom: 16 }} />
+        <div style={{ position: 'relative', zIndex: 10 }}>
+          <h2 style={{
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontSize: isMobile ? '1.4rem' : '1.8rem',
+            color: '#6B1D2A',
+            fontWeight: 700,
+            fontStyle: 'italic',
+            margin: 0,
+          }}>
+            Visual Decryption
+          </h2>
+          <p style={{
+            fontFamily: "'Bebas Neue', sans-serif",
+            fontSize: '0.6rem',
+            letterSpacing: '0.25em',
+            color: '#666',
+            margin: '2px 0 12px',
+          }}>
+            IDENTIFY FILM FROM RECOVERED ASSETS
+          </p>
 
-        {/* Wrong guesses */}
-        {gs.guesses.length > 0 && (
-          <div style={{ marginBottom: 12, textAlign: 'center' }}>
-            {gs.guesses.map((g, i) => (
-              <span key={i} style={{
-                display: 'inline-block',
-                padding: '2px 8px',
-                margin: 2,
-                fontSize: '0.75rem',
-                fontFamily: "'Bebas Neue', sans-serif",
-                letterSpacing: '0.05em',
-                color: g.toLowerCase() === movie.title.toLowerCase() ? '#4A8B5C' : '#8B3A3A',
-                textDecoration: g.toLowerCase() === movie.title.toLowerCase() ? 'none' : 'line-through',
-              }}>
-                {g}
-              </span>
-            ))}
-          </div>
-        )}
+          {/* Gold divider */}
+          <div style={{ height: 2, background: '#8B6914', marginBottom: 16 }} />
 
-        {!gs.completed ? (
-          <>
-            {/* Search input with burgundy border */}
-            <div style={{
-              border: '2px solid #6B1D2A',
-              marginBottom: 12,
-            }}>
-              <MovieSearch
-                onSelect={handleGuess}
-                placeholder="ENTER FILM TITLE..."
-                variant="cream"
-              />
-            </div>
-
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button
-                style={{
-                  flex: 1,
-                  padding: '10px',
+          {/* Wrong guesses */}
+          {gs.guesses.length > 0 && (
+            <div style={{ marginBottom: 12, textAlign: 'center' }}>
+              {gs.guesses.map((g, i) => (
+                <span key={i} style={{
+                  display: 'inline-block',
+                  padding: '2px 8px',
+                  margin: 2,
+                  fontSize: '0.75rem',
                   fontFamily: "'Bebas Neue', sans-serif",
-                  fontSize: '0.9rem',
-                  letterSpacing: '0.15em',
-                  background: '#1a1a1a',
-                  color: '#fff',
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
-              >
-                IDENTIFY
-              </button>
-              <button
-                onClick={handleHint}
-                style={{
-                  width: 44,
-                  height: 44,
-                  background: '#8B6914',
-                  color: '#fff',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: '1.2rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                👁
-              </button>
+                  letterSpacing: '0.05em',
+                  color: g.toLowerCase() === movie.title.toLowerCase() ? '#4A8B5C' : '#8B3A3A',
+                  textDecoration: g.toLowerCase() === movie.title.toLowerCase() ? 'none' : 'line-through',
+                }}>
+                  {g}
+                </span>
+              ))}
             </div>
-          </>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            style={{ textAlign: 'center', padding: 8 }}
-          >
-            <p style={{
-              fontFamily: "'Bebas Neue', sans-serif",
-              fontSize: '0.9rem',
-              letterSpacing: '0.1em',
-              color: gs.won ? '#4A8B5C' : '#8B3A3A',
-            }}>
-              {gs.won ? 'FILM IDENTIFIED!' : 'CASE REMAINS OPEN...'}
-            </p>
-            <p style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
-              fontSize: '1.3rem',
-              color: '#1a1a1a',
-              fontWeight: 700,
-              margin: '4px 0',
-            }}>
-              {movie.title}
-            </p>
-            {gs.won && (
+          )}
+
+          {!gs.completed ? (
+            <>
+              <div style={{
+                border: '2px solid #6B1D2A',
+                marginBottom: 12,
+              }}>
+                <MovieSearch
+                  onSelect={handleGuess}
+                  placeholder="ENTER FILM TITLE..."
+                  variant="cream"
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button
+                  style={{
+                    flex: 1,
+                    padding: '10px',
+                    fontFamily: "'Bebas Neue', sans-serif",
+                    fontSize: '0.9rem',
+                    letterSpacing: '0.15em',
+                    background: '#1a1a1a',
+                    color: '#fff',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
+                  IDENTIFY
+                </button>
+                <button
+                  onClick={handleHint}
+                  style={{
+                    width: 44,
+                    height: 44,
+                    background: '#8B6914',
+                    color: '#fff',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '1.2rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  👁
+                </button>
+              </div>
+
+              <p style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: '0.8rem',
+                color: '#888',
+                fontStyle: 'italic',
+                textAlign: 'center',
+                marginTop: 10,
+              }}>
+                {5 - round + 1} attempts remaining
+              </p>
+            </>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              style={{ textAlign: 'center', padding: 8 }}
+            >
               <p style={{
                 fontFamily: "'Bebas Neue', sans-serif",
-                fontSize: '1.5rem',
-                color: '#8B6914',
-                marginTop: 4,
+                fontSize: '0.9rem',
+                letterSpacing: '0.1em',
+                color: gs.won ? '#4A8B5C' : '#8B3A3A',
               }}>
-                +{gs.score} PTS
+                {gs.won ? 'FILM IDENTIFIED!' : 'CASE REMAINS OPEN...'}
               </p>
-            )}
-          </motion.div>
-        )}
+              <p style={{
+                fontFamily: "'Playfair Display', Georgia, serif",
+                fontSize: '1.3rem',
+                color: '#1a1a1a',
+                fontWeight: 700,
+                margin: '4px 0',
+              }}>
+                {movie.title}
+              </p>
+              {gs.won && (
+                <p style={{
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontSize: '1.5rem',
+                  color: '#8B6914',
+                  marginTop: 4,
+                }}>
+                  +{gs.score} PTS
+                </p>
+              )}
+            </motion.div>
+          )}
+        </div>
       </div>
     </div>
   );

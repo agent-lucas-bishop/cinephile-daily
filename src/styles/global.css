@@ -97,6 +97,18 @@ input {
   font-family: inherit;
 }
 
+/* Cast polaroid hover — straighten and lift */
+.cast-polaroid:hover {
+  transform: rotate(0deg) scale(1.05) !important;
+  z-index: 10;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25) !important;
+}
+
+/* Year poster hover — straighten */
+.year-poster:hover {
+  transform: rotate(0deg) !important;
+}
+
 /* Prevent iOS zoom on input focus */
 @media (max-width: 600px) {
   input, select, textarea {

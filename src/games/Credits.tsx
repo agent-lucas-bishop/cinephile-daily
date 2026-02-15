@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MovieSearch } from '../components/MovieSearch';
 import { getScore } from '../utils/scoring';
@@ -15,12 +16,23 @@ interface Props {
 
 const BLUR_LEVELS = [80, 50, 30, 15, 5];
 
+const CHALK_TEXTURE = 'https://www.transparenttextures.com/patterns/black-chalk.png';
+
 export function CreditsGame({ movie, state, update }: Props) {
   const gs = state.games.credits;
   const round = gs.round;
   const isMobile = useIsMobile();
   const caseNumber = String(movie.id * 137 + movie.year).slice(-4);
   const posterBlur = BLUR_LEVELS[Math.min(round - 1, 4)];
+
+  // Generate stable random rotations for cast cards
+  const castRotations = useMemo(() => {
+    const seed = movie.id;
+    return movie.cast.map((_, i) => {
+      const x = Math.sin(seed * 9301 + i * 4973) * 10000;
+      return ((x - Math.floor(x)) * 6) - 3; // -3 to 3 degrees
+    });
+  }, [movie.id, movie.cast]);
 
   const handleGuess = (title: string) => {
     const correct = title.toLowerCase() === movie.title.toLowerCase();
@@ -55,7 +67,6 @@ export function CreditsGame({ movie, state, update }: Props) {
     });
   };
 
-  // Determine visible cast based on round
   const visibleCast = round >= 2 ? movie.cast.slice(0, Math.min(round + 2, movie.cast.length)) : movie.cast.slice(0, 3);
   const showWriters = round >= 2;
   const showYear = round >= 3;
@@ -83,17 +94,29 @@ export function CreditsGame({ movie, state, update }: Props) {
         ← RETURN TO DOSSIER
       </div>
 
-      {/* Main cream card */}
+      {/* Main cream card with PaperCard styling */}
       <div style={{
+        position: 'relative',
         background: 'var(--cream)',
         border: '2px solid var(--cream-dark)',
         padding: isMobile ? '16px' : '24px',
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
+        boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
+        overflow: 'hidden',
       }}>
+        {/* Decorative double-line border inset */}
+        <div style={{
+          position: 'absolute',
+          inset: isMobile ? 8 : 12,
+          border: '2px double rgba(26,26,26,0.2)',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }} />
+
         {/* Header row: poster thumbnail + case info + search */}
-        <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+        <div style={{ display: 'flex', gap: 12, marginBottom: 16, position: 'relative', zIndex: 10 }}>
           {/* Blurred poster thumbnail */}
           <div style={{
             width: isMobile ? 70 : 90,
@@ -151,6 +174,21 @@ export function CreditsGame({ movie, state, update }: Props) {
               IDENTIFY THE MOTION PICTURE
             </p>
 
+            {/* Status dots showing attempts remaining */}
+            {!gs.completed && (
+              <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: '50%',
+                    background: i < round ? '#8B3A3A' : 'rgba(197,160,89,0.5)',
+                    transition: 'background 0.3s',
+                  }} />
+                ))}
+              </div>
+            )}
+
             {!gs.completed && (
               <>
                 <div style={{ position: 'relative' }}>
@@ -199,7 +237,7 @@ export function CreditsGame({ movie, state, update }: Props) {
         </div>
 
         {/* Divider */}
-        <div style={{ height: 1, background: 'var(--cream-dark)', margin: '4px 0 16px' }} />
+        <div style={{ height: 1, background: 'var(--cream-dark)', margin: '4px 0 16px', position: 'relative', zIndex: 10 }} />
 
         {/* Clues area */}
         <AnimatePresence mode="wait">
@@ -208,17 +246,29 @@ export function CreditsGame({ movie, state, update }: Props) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            style={{ flex: 1 }}
+            style={{ flex: 1, position: 'relative', zIndex: 10 }}
           >
-            {/* Director banner */}
+            {/* Director banner — angled with chalk texture */}
             <div style={{
               background: 'linear-gradient(135deg, #2a2320, #1a1714)',
               padding: isMobile ? '14px 16px' : '18px 24px',
               textAlign: 'center',
               marginBottom: 16,
-              borderRadius: 4,
+              borderRadius: 0,
               position: 'relative',
+              transform: 'rotate(-1deg)',
+              border: '4px solid #333',
+              overflow: 'hidden',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
             }}>
+              {/* Chalk texture overlay */}
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                opacity: 0.1,
+                pointerEvents: 'none',
+                backgroundImage: `url('${CHALK_TEXTURE}')`,
+              }} />
               <span style={{
                 display: 'inline-block',
                 fontFamily: "'Bebas Neue', sans-serif",
@@ -228,6 +278,10 @@ export function CreditsGame({ movie, state, update }: Props) {
                 background: 'var(--cream)',
                 padding: '2px 10px',
                 marginBottom: 6,
+                position: 'relative',
+                zIndex: 1,
+                borderRadius: 2,
+                boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
               }}>
                 DIRECTOR
               </span>
@@ -237,6 +291,9 @@ export function CreditsGame({ movie, state, update }: Props) {
                 color: 'var(--cream)',
                 fontWeight: 600,
                 margin: 0,
+                position: 'relative',
+                zIndex: 1,
+                letterSpacing: '0.03em',
               }}>
                 {movie.director}
               </p>
@@ -303,7 +360,7 @@ export function CreditsGame({ movie, state, update }: Props) {
               </motion.div>
             )}
 
-            {/* Cast polaroid cards */}
+            {/* Cast polaroid cards with random tilts */}
             <div style={{
               display: 'flex',
               flexWrap: 'wrap',
@@ -313,17 +370,24 @@ export function CreditsGame({ movie, state, update }: Props) {
             }}>
               {visibleCast.map((member, i) => {
                 const headshot = getHeadshotUrl(member.profilePath);
+                const rotation = castRotations[i] ?? 0;
                 return (
                   <motion.div
                     key={member.name}
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1 }}
+                    className="cast-polaroid"
                     style={{
                       width: isMobile ? 'calc(33% - 6px)' : 110,
                       background: '#fff',
                       padding: 6,
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+                      paddingBottom: 10,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.18)',
+                      transform: `rotate(${rotation}deg)`,
+                      transition: 'transform 0.3s ease, box-shadow 0.3s ease, z-index 0s',
+                      cursor: 'default',
+                      position: 'relative',
                     }}
                   >
                     <div style={{
@@ -340,6 +404,7 @@ export function CreditsGame({ movie, state, update }: Props) {
                             width: '100%',
                             height: '100%',
                             objectFit: 'cover',
+                            filter: 'sepia(0.2)',
                           }}
                         />
                       ) : (
@@ -387,7 +452,7 @@ export function CreditsGame({ movie, state, update }: Props) {
 
         {/* Wrong guesses */}
         {gs.guesses.length > 0 && (
-          <div style={{ marginTop: 12, textAlign: 'center' }}>
+          <div style={{ marginTop: 12, textAlign: 'center', position: 'relative', zIndex: 10 }}>
             {gs.guesses.map((g, i) => (
               <span key={i} style={{
                 display: 'inline-block',
@@ -416,6 +481,8 @@ export function CreditsGame({ movie, state, update }: Props) {
               marginTop: 16,
               background: gs.won ? 'rgba(74,139,92,0.08)' : 'rgba(139,58,58,0.08)',
               border: `1px solid ${gs.won ? '#4A8B5C' : '#8B3A3A'}`,
+              position: 'relative',
+              zIndex: 10,
             }}
           >
             <p style={{
