@@ -134,7 +134,7 @@ export function MovieSearch({ onSelect, disabled, placeholder = "Type a movie ti
           background: isCream ? '#fff' : '#1C1714',
           border: `1px solid ${isCream ? '#d4c5a9' : 'var(--gold-dark)'}`,
           borderTop: 'none',
-          zIndex: 100,
+          zIndex: 9999,
           maxHeight: 200,
           overflowY: 'auto',
         }}>

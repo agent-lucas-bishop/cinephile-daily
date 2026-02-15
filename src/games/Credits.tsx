@@ -190,7 +190,7 @@ export function CreditsGame({ movie, state, update }: Props) {
 
             {!gs.completed && (
               <>
-                <div style={{ position: 'relative' }}>
+                <div style={{ position: 'relative', zIndex: 9999 }}>
                   <MovieSearch
                     onSelect={handleGuess}
                     placeholder="SEARCH EVIDENCE..."
