@@ -5,15 +5,18 @@ interface Props {
   onSelect: (title: string) => void;
   disabled?: boolean;
   placeholder?: string;
+  variant?: 'dark' | 'cream';
 }
 
-export function MovieSearch({ onSelect, disabled, placeholder = "Type a movie title..." }: Props) {
+export function MovieSearch({ onSelect, disabled, placeholder = "Type a movie title...", variant = 'dark' }: Props) {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const isCream = variant === 'cream';
 
   useEffect(() => {
     if (query.length < 1) {
@@ -26,7 +29,6 @@ export function MovieSearch({ onSelect, disabled, placeholder = "Type a movie ti
     setSelectedIdx(-1);
   }, [query]);
 
-  // Close suggestions on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -65,45 +67,56 @@ export function MovieSearch({ onSelect, disabled, placeholder = "Type a movie ti
   };
 
   return (
-    <div ref={containerRef} style={{ position: 'relative', width: '100%', maxWidth: 400, margin: '0 auto' }}>
-      <input
-        ref={inputRef}
-        value={query}
-        onChange={e => { setQuery(e.target.value); setShowSuggestions(true); }}
-        onFocus={() => setShowSuggestions(true)}
-        onKeyDown={handleKeyDown}
-        disabled={disabled}
-        placeholder={placeholder}
-        autoComplete="off"
-        autoCorrect="off"
-        autoCapitalize="off"
-        spellCheck={false}
-        enterKeyHint="go"
-        style={{
-          width: '100%',
-          padding: '12px 16px',
-          fontSize: '1rem',
-          fontFamily: "'Cormorant Garamond', Georgia, serif",
-          background: 'rgba(28, 23, 20, 0.9)',
-          border: '1px solid var(--gold-dark)',
-          color: 'var(--cream)',
-          outline: 'none',
-          transition: 'border-color 0.2s',
-          boxSizing: 'border-box',
-          borderRadius: 0,
-          WebkitAppearance: 'none',
-        }}
-        onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--gold)')}
-        onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--gold-dark)')}
-      />
+    <div ref={containerRef} style={{ position: 'relative', width: '100%' }}>
+      <div style={{ position: 'relative' }}>
+        <input
+          ref={inputRef}
+          value={query}
+          onChange={e => { setQuery(e.target.value); setShowSuggestions(true); }}
+          onFocus={() => setShowSuggestions(true)}
+          onKeyDown={handleKeyDown}
+          disabled={disabled}
+          placeholder={placeholder}
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck={false}
+          enterKeyHint="go"
+          style={{
+            width: '100%',
+            padding: isCream ? '8px 32px 8px 10px' : '12px 16px',
+            fontSize: isCream ? '0.8rem' : '1rem',
+            fontFamily: isCream ? "'Bebas Neue', sans-serif" : "'Cormorant Garamond', Georgia, serif",
+            letterSpacing: isCream ? '0.15em' : undefined,
+            background: isCream ? 'transparent' : 'rgba(28, 23, 20, 0.9)',
+            border: isCream ? 'none' : '1px solid var(--gold-dark)',
+            borderBottom: isCream ? '2px solid #8B3A3A' : undefined,
+            color: isCream ? '#333' : 'var(--cream)',
+            outline: 'none',
+            boxSizing: 'border-box',
+            borderRadius: 0,
+            WebkitAppearance: 'none',
+          }}
+        />
+        {isCream && (
+          <span style={{
+            position: 'absolute',
+            right: 8,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            fontSize: '0.9rem',
+            color: '#999',
+          }}>🔍</span>
+        )}
+      </div>
       {showSuggestions && suggestions.length > 0 && (
         <div style={{
           position: 'absolute',
           bottom: '100%',
           left: 0,
           right: 0,
-          background: '#1C1714',
-          border: '1px solid var(--gold-dark)',
+          background: isCream ? '#fff' : '#1C1714',
+          border: `1px solid ${isCream ? '#d4c5a9' : 'var(--gold-dark)'}`,
           borderBottom: 'none',
           zIndex: 100,
           maxHeight: 200,
@@ -118,9 +131,13 @@ export function MovieSearch({ onSelect, disabled, placeholder = "Type a movie ti
                 cursor: 'pointer',
                 fontSize: '0.95rem',
                 fontFamily: "'Cormorant Garamond', Georgia, serif",
-                background: i === selectedIdx ? 'rgba(212,168,67,0.15)' : 'transparent',
-                color: i === selectedIdx ? 'var(--gold-light)' : 'var(--cream)',
-                borderBottom: '1px solid rgba(212,168,67,0.1)',
+                background: i === selectedIdx
+                  ? (isCream ? 'rgba(139,105,20,0.1)' : 'rgba(212,168,67,0.15)')
+                  : 'transparent',
+                color: isCream
+                  ? (i === selectedIdx ? '#333' : '#555')
+                  : (i === selectedIdx ? 'var(--gold-light)' : 'var(--cream)'),
+                borderBottom: `1px solid ${isCream ? '#e8d9b8' : 'rgba(212,168,67,0.1)'}`,
                 minHeight: 44,
                 display: 'flex',
                 alignItems: 'center',

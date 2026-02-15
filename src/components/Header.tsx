@@ -1,5 +1,4 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArtDecoLine } from './ArtDecoLine';
 import { useIsMobile } from '../hooks/useMediaQuery';
 
 export function Header() {
@@ -8,50 +7,53 @@ export function Header() {
   const isHome = location.pathname === '/';
   const isMobile = useIsMobile();
 
-  const titleSize = isHome
-    ? (isMobile ? '2.2rem' : '3.5rem')
-    : (isMobile ? '1.5rem' : '2rem');
-
-  const subtitleSize = isHome
-    ? (isMobile ? '0.85rem' : '1.1rem')
-    : (isMobile ? '0.65rem' : '0.8rem');
+  if (!isHome) return null; // Game pages have their own back nav
 
   return (
     <header style={{
       textAlign: 'center',
-      padding: isMobile ? '12px 8px 8px' : '24px 20px 16px',
+      padding: isMobile ? '16px 8px 8px' : '32px 20px 16px',
       flexShrink: 0,
     }}>
       <div
         onClick={() => navigate('/')}
         style={{ cursor: 'pointer' }}
       >
+        {/* Top gold line */}
+        <div style={{
+          height: 2,
+          background: 'linear-gradient(to right, transparent, var(--gold-dark), var(--gold), var(--gold-dark), transparent)',
+          marginBottom: 8,
+        }} />
+
         <h1 style={{
-          fontFamily: "'Bebas Neue', sans-serif",
-          fontSize: titleSize,
-          letterSpacing: '0.15em',
-          color: 'var(--gold)',
+          fontFamily: "'Playfair Display', Georgia, serif",
+          fontSize: isMobile ? '2.5rem' : '3.5rem',
+          fontWeight: 900,
+          letterSpacing: '0.08em',
+          color: 'var(--cream)',
           lineHeight: 1,
-          textShadow: '0 2px 20px rgba(212,168,67,0.3)',
-          transition: 'font-size 0.3s ease',
+          textShadow: '0 2px 20px rgba(212,168,67,0.2)',
           margin: 0,
         }}>
-          CINEPHILE
+          CINÉPHILE
         </h1>
         <p style={{
-          fontFamily: "'Playfair Display', Georgia, serif",
-          fontSize: subtitleSize,
-          fontStyle: 'italic',
+          fontFamily: "'Bebas Neue', sans-serif",
+          fontSize: isMobile ? '0.7rem' : '0.85rem',
+          letterSpacing: '0.4em',
           color: 'var(--text-muted)',
-          letterSpacing: '0.3em',
           marginTop: 2,
-          transition: 'font-size 0.3s ease',
         }}>
-          DAILY
+          THE DAILY EDITION
         </p>
-      </div>
-      <div style={{ marginTop: isMobile ? 6 : 12 }}>
-        <ArtDecoLine />
+
+        {/* Bottom gold line */}
+        <div style={{
+          height: 2,
+          background: 'linear-gradient(to right, transparent, var(--gold-dark), var(--gold), var(--gold-dark), transparent)',
+          marginTop: 8,
+        }} />
       </div>
     </header>
   );

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { RoundIndicator } from '../components/RoundIndicator';
 import { getScore } from '../utils/scoring';
 import { updateStatsAfterGame } from '../utils/storage';
 import { useIsMobile } from '../hooks/useMediaQuery';
@@ -16,7 +15,6 @@ interface Props {
 export function YearGame({ movie, state, update }: Props) {
   const gs = state.games.year;
   const [inputYear, setInputYear] = useState('');
-  const [hint, setHint] = useState<string | null>(null);
   const isMobile = useIsMobile();
 
   const handleGuess = () => {
@@ -25,12 +23,6 @@ export function YearGame({ movie, state, update }: Props) {
 
     const correct = year === movie.year;
     setInputYear('');
-
-    if (correct) {
-      setHint(null);
-    } else {
-      setHint(year < movie.year ? '↑ Higher' : '↓ Lower');
-    }
 
     update(s => {
       const g = { ...s.games.year };
@@ -62,207 +54,215 @@ export function YearGame({ movie, state, update }: Props) {
       display: 'flex',
       flexDirection: 'column',
     }}>
-      <h2 style={{
-        fontFamily: "'Bebas Neue', sans-serif",
-        fontSize: isMobile ? '1.3rem' : '1.8rem',
-        letterSpacing: '0.1em',
-        color: 'var(--gold)',
-        textAlign: 'center',
-        margin: isMobile ? '8px 0 4px' : '16px 0 8px',
-      }}>
-        THE YEAR
-      </h2>
-      <p style={{
-        textAlign: 'center',
-        color: 'var(--text-muted)',
-        fontStyle: 'italic',
-        fontSize: isMobile ? '0.8rem' : '0.95rem',
-        marginBottom: isMobile ? 8 : 16,
-      }}>
-        When was this film released?
-      </p>
-
-      <RoundIndicator current={gs.round} won={gs.won} />
-
-      {/* Movie info */}
+      {/* Back link */}
       <div style={{
-        textAlign: 'center',
-        margin: isMobile ? '8px 0' : '20px 0',
-        flex: gs.completed ? undefined : 1,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: 0,
+        padding: '8px 0',
+        fontFamily: "'Bebas Neue', sans-serif",
+        fontSize: '0.75rem',
+        letterSpacing: '0.2em',
+        color: 'var(--text-muted)',
+        cursor: 'pointer',
+      }} onClick={() => window.history.back()}>
+        ← RETURN TO DOSSIER
+      </div>
+
+      {/* Blurred poster with silver frame */}
+      <div style={{
+        position: 'relative',
+        margin: '0 auto',
+        maxWidth: isMobile ? '70%' : 320,
+        width: '100%',
+        padding: 8,
+        background: 'linear-gradient(135deg, #c0c0c0, #888, #c0c0c0)',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
       }}>
         <div style={{
-          maxWidth: isMobile ? 140 : 200,
-          margin: isMobile ? '0 auto 8px' : '0 auto 16px',
-          border: '2px solid var(--gold-dark)',
           overflow: 'hidden',
+          background: '#0D0A07',
         }}>
           <img
             src={movie.posterUrl}
             alt={movie.title}
-            style={{ width: '100%', display: 'block' }}
+            style={{
+              width: '100%',
+              display: 'block',
+              filter: gs.completed ? 'blur(0px)' : `blur(${40 - gs.round * 6}px)`,
+              transition: 'filter 0.6s ease',
+              transform: 'scale(1.1)',
+            }}
           />
         </div>
-        <h3 style={{
-          fontFamily: "'Playfair Display', Georgia, serif",
-          fontSize: isMobile ? '1.1rem' : '1.5rem',
-          color: 'var(--gold-light)',
-          fontWeight: 700,
-        }}>
-          {movie.title}
-        </h3>
-        <p style={{
-          fontFamily: "'Cormorant Garamond', serif",
-          color: 'var(--text-muted)',
-          marginTop: 4,
-          fontSize: isMobile ? '0.85rem' : '1rem',
-        }}>
-          Directed by {movie.director}
-        </p>
       </div>
 
-      {/* Previous guesses */}
-      {gs.yearGuesses.length > 0 && (
-        <div style={{ marginBottom: 8, textAlign: 'center' }}>
-          {gs.yearGuesses.map((y, i) => (
-            <span key={i} style={{
-              display: 'inline-block',
-              padding: '3px 10px',
-              margin: 2,
-              fontSize: isMobile ? '0.85rem' : '1rem',
-              fontFamily: "'Bebas Neue', sans-serif",
-              letterSpacing: '0.05em',
-              color: y === movie.year ? '#4A8B5C' : '#8B3A3A',
-              border: `1px solid ${y === movie.year ? 'rgba(74,139,92,0.4)' : 'rgba(139,58,58,0.3)'}`,
-            }}>
-              {y} {y < movie.year ? '↑' : y > movie.year ? '↓' : '✓'}
-            </span>
-          ))}
-        </div>
-      )}
+      {/* Cream card */}
+      <div style={{
+        background: 'var(--cream)',
+        border: '2px solid var(--cream-dark)',
+        padding: isMobile ? '20px 16px' : '28px 24px',
+        marginTop: 16,
+        textAlign: 'center',
+      }}>
+        {/* Art deco line above title */}
+        <div style={{ width: 80, height: 2, background: '#1a1a1a', margin: '0 auto 8px' }} />
 
-      {hint && !gs.completed && (
-        <p style={{
-          textAlign: 'center',
+        <h2 style={{
           fontFamily: "'Bebas Neue', sans-serif",
-          fontSize: isMobile ? '1rem' : '1.2rem',
-          color: 'var(--gold)',
+          fontSize: isMobile ? '1.4rem' : '1.8rem',
+          color: '#1a1a1a',
           letterSpacing: '0.1em',
-          marginBottom: 8,
+          margin: 0,
+          lineHeight: 1,
         }}>
-          {hint}
-        </p>
-      )}
+          {movie.title.toUpperCase()}
+        </h2>
 
-      {!gs.completed ? (
-        <div style={{
-          display: 'flex',
-          gap: 8,
-          justifyContent: 'center',
-          maxWidth: 300,
-          margin: '0 auto',
-          flexShrink: 0,
-          paddingBottom: isMobile ? 8 : 16,
+        {/* Art deco line below title */}
+        <div style={{ width: 80, height: 2, background: '#1a1a1a', margin: '8px auto 12px' }} />
+
+        <p style={{
+          fontFamily: "'Cormorant Garamond', serif",
+          fontSize: isMobile ? '0.9rem' : '1rem',
+          color: '#555',
+          fontStyle: 'italic',
+          margin: '0 0 16px',
         }}>
-          <input
-            type="number"
-            value={inputYear}
-            onChange={e => setInputYear(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleGuess()}
-            placeholder="e.g. 1994"
-            min={1900}
-            max={2030}
-            inputMode="numeric"
-            style={{
-              flex: 1,
-              padding: '12px 16px',
-              fontSize: '1.1rem',
-              fontFamily: "'Bebas Neue', sans-serif",
-              letterSpacing: '0.1em',
-              background: 'rgba(28,23,20,0.9)',
-              border: '1px solid var(--gold-dark)',
-              color: 'var(--cream)',
-              outline: 'none',
-              textAlign: 'center',
-              boxSizing: 'border-box',
-              borderRadius: 0,
-              WebkitAppearance: 'none',
-              minHeight: 44,
-            }}
-          />
-          <button
-            onClick={handleGuess}
-            style={{
-              padding: '12px 20px',
-              fontFamily: "'Bebas Neue', sans-serif",
-              fontSize: '1rem',
-              letterSpacing: '0.1em',
-              background: 'var(--burgundy)',
-              border: '1px solid var(--gold-dark)',
-              color: 'var(--gold)',
-              transition: 'all 0.2s',
-              minHeight: 44,
-              minWidth: 44,
-              cursor: 'pointer',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.background = 'var(--burgundy-dark)';
-              e.currentTarget.style.borderColor = 'var(--gold)';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.background = 'var(--burgundy)';
-              e.currentTarget.style.borderColor = 'var(--gold-dark)';
-            }}
+          "Identify the year of release"
+        </p>
+
+        {/* Previous guesses */}
+        {gs.yearGuesses.length > 0 && !gs.completed && (
+          <div style={{ marginBottom: 12 }}>
+            {gs.yearGuesses.map((y, i) => (
+              <span key={i} style={{
+                display: 'inline-block',
+                padding: '3px 10px',
+                margin: 2,
+                fontSize: '0.9rem',
+                fontFamily: "'Bebas Neue', sans-serif",
+                letterSpacing: '0.05em',
+                color: y === movie.year ? '#4A8B5C' : '#8B3A3A',
+              }}>
+                {y} {y < movie.year ? '↑' : y > movie.year ? '↓' : '✓'}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {!gs.completed ? (
+          <>
+            {/* Year input with gold underline */}
+            <div style={{ maxWidth: 200, margin: '0 auto 12px' }}>
+              <input
+                type="number"
+                value={inputYear}
+                onChange={e => setInputYear(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleGuess()}
+                placeholder="YYYY"
+                min={1900}
+                max={2030}
+                inputMode="numeric"
+                style={{
+                  width: '100%',
+                  padding: '8px 0',
+                  fontSize: '1.5rem',
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  letterSpacing: '0.2em',
+                  background: 'transparent',
+                  border: 'none',
+                  borderBottom: '3px solid #8B6914',
+                  color: '#1a1a1a',
+                  outline: 'none',
+                  textAlign: 'center',
+                  boxSizing: 'border-box',
+                  borderRadius: 0,
+                  WebkitAppearance: 'none',
+                  MozAppearance: 'textfield' as never,
+                }}
+              />
+            </div>
+
+            <button
+              onClick={handleGuess}
+              style={{
+                padding: '10px 32px',
+                fontFamily: "'Bebas Neue', sans-serif",
+                fontSize: '0.9rem',
+                letterSpacing: '0.15em',
+                background: '#1a1a1a',
+                color: '#fff',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              STAMP DATE
+            </button>
+          </>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            style={{ padding: 8 }}
           >
-            GUESS
-          </button>
-        </div>
-      ) : (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          style={{
-            textAlign: 'center',
-            padding: isMobile ? '12px' : '24px',
-            margin: isMobile ? '8px 0' : '16px 0',
-            background: gs.won
-              ? 'linear-gradient(135deg, rgba(74,139,92,0.1), rgba(28,23,20,0.9))'
-              : 'linear-gradient(135deg, rgba(139,58,58,0.1), rgba(28,23,20,0.9))',
-            border: `1px solid ${gs.won ? 'rgba(74,139,92,0.4)' : 'rgba(139,58,58,0.3)'}`,
-          }}
-        >
-          <p style={{
-            fontFamily: "'Bebas Neue', sans-serif",
-            fontSize: isMobile ? '1rem' : '1.3rem',
-            letterSpacing: '0.1em',
-            color: gs.won ? '#4A8B5C' : '#8B3A3A',
-          }}>
-            {gs.won ? 'CORRECT!' : 'THE ANSWER WAS...'}
-          </p>
-          <p style={{
-            fontFamily: "'Bebas Neue', sans-serif",
-            fontSize: isMobile ? '2rem' : '3rem',
-            color: 'var(--gold-light)',
-            margin: '4px 0',
-          }}>
-            {movie.year}
-          </p>
-          {gs.won && (
             <p style={{
               fontFamily: "'Bebas Neue', sans-serif",
-              fontSize: isMobile ? '1.4rem' : '2rem',
-              color: 'var(--gold)',
-              marginTop: 4,
+              fontSize: '0.9rem',
+              letterSpacing: '0.1em',
+              color: gs.won ? '#4A8B5C' : '#8B3A3A',
             }}>
-              +{gs.score} PTS
+              {gs.won ? 'DATE CONFIRMED!' : 'INCORRECT DATE...'}
             </p>
-          )}
-        </motion.div>
-      )}
+            <p style={{
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: '2rem',
+              color: '#1a1a1a',
+              margin: '4px 0',
+            }}>
+              {movie.year}
+            </p>
+            {gs.won && (
+              <p style={{
+                fontFamily: "'Bebas Neue', sans-serif",
+                fontSize: '1.5rem',
+                color: '#8B6914',
+                marginTop: 4,
+              }}>
+                +{gs.score} PTS
+              </p>
+            )}
+          </motion.div>
+        )}
+
+        {/* Dashed line separator */}
+        <div style={{
+          borderTop: '2px dashed #c0c0c0',
+          margin: '16px 0',
+        }} />
+
+        {/* Attempt indicators */}
+        <div style={{
+          display: 'flex',
+          gap: 12,
+          justifyContent: 'center',
+        }}>
+          {Array.from({ length: 5 }).map((_, i) => {
+            const used = i < gs.round;
+            const isCorrect = gs.won && i === gs.round - 1;
+            return (
+              <div
+                key={i}
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: '50%',
+                  border: `2px solid ${isCorrect ? '#4A8B5C' : used ? '#c0c0c0' : '#e0d8c8'}`,
+                  background: isCorrect ? '#4A8B5C' : used ? '#c0c0c0' : 'transparent',
+                  transition: 'all 0.3s',
+                }}
+              />
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }

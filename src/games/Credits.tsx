@@ -1,10 +1,9 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { MovieSearch } from '../components/MovieSearch';
-import { RoundIndicator } from '../components/RoundIndicator';
-import { BlurryPoster } from '../components/BlurryPoster';
 import { getScore } from '../utils/scoring';
 import { updateStatsAfterGame } from '../utils/storage';
 import { useIsMobile } from '../hooks/useMediaQuery';
+import { getHeadshotUrl } from '../data/movies';
 import type { Movie } from '../data/movies';
 import type { DailyState } from '../utils/storage';
 
@@ -14,10 +13,14 @@ interface Props {
   update: (fn: (s: DailyState) => DailyState) => void;
 }
 
+const BLUR_LEVELS = [80, 50, 30, 15, 5];
+
 export function CreditsGame({ movie, state, update }: Props) {
   const gs = state.games.credits;
   const round = gs.round;
   const isMobile = useIsMobile();
+  const caseNumber = String(movie.id * 137 + movie.year).slice(-4);
+  const posterBlur = BLUR_LEVELS[Math.min(round - 1, 4)];
 
   const handleGuess = (title: string) => {
     const correct = title.toLowerCase() === movie.title.toLowerCase();
@@ -40,49 +43,21 @@ export function CreditsGame({ movie, state, update }: Props) {
     });
   };
 
-  // Progressive clues by round
-  const clues: React.ReactNode[] = [];
+  const handleHint = () => {
+    update(s => {
+      const g = { ...s.games.credits };
+      if (g.round < 5 && !g.completed) {
+        g.round += 1;
+      }
+      return { ...s, games: { ...s.games, credits: g } };
+    });
+  };
 
-  clues.push(
-    <ClueSection key="r1" label="DIRECTOR" value={movie.director} isMobile={isMobile} />,
-    <ClueSection key="r1c" label="STARRING" value={movie.cast.slice(0, 3).join(' · ')} isMobile={isMobile} />,
-    <ClueSection key="r1g" label="GENRE" value={movie.genre} isMobile={isMobile} />,
-  );
-
-  if (round >= 2) {
-    clues.push(
-      <ClueSection key="r2c" label="ALSO STARRING" value={movie.cast[3] ?? ''} isMobile={isMobile} />,
-      <ClueSection key="r2w" label="WRITTEN BY" value={movie.writers.join(' & ')} isMobile={isMobile} />,
-      <ClueSection key="r2y" label="YEAR" value={String(movie.year)} isMobile={isMobile} />,
-    );
-  }
-
-  if (round >= 3) {
-    clues.push(
-      <div key="r3p" style={{ margin: isMobile ? '8px 0' : '16px 0' }}>
-        <BlurryPoster url={movie.posterUrl} blur={40} maxWidth={isMobile ? 120 : 180} />
-      </div>,
-      <ClueSection key="r3ch" label="CHARACTERS" value={movie.characters.slice(0, 3).join(' · ')} isMobile={isMobile} />,
-    );
-  }
-
-  if (round >= 4) {
-    clues.push(
-      <div key="r4p" style={{ margin: isMobile ? '8px 0' : '16px 0' }}>
-        <BlurryPoster url={movie.posterUrl} blur={15} maxWidth={isMobile ? 140 : 200} />
-      </div>,
-      <ClueSection key="r4k" label="PLOT KEYWORDS" value={movie.plotKeywords.join(' · ')} isMobile={isMobile} />,
-    );
-  }
-
-  if (round >= 5) {
-    clues.push(
-      <div key="r5p" style={{ margin: isMobile ? '8px 0' : '16px 0' }}>
-        <BlurryPoster url={movie.posterUrl} blur={4} maxWidth={isMobile ? 150 : 220} />
-      </div>,
-      <ClueSection key="r5t" label="TAGLINE" value={`"${movie.tagline}"`} isMobile={isMobile} />,
-    );
-  }
+  // Determine visible cast based on round
+  const visibleCast = round >= 2 ? movie.cast.slice(0, Math.min(round + 2, movie.cast.length)) : movie.cast.slice(0, 3);
+  const showWriters = round >= 2;
+  const showYear = round >= 3;
+  const showCharacters = round >= 3;
 
   return (
     <div style={{
@@ -94,156 +69,390 @@ export function CreditsGame({ movie, state, update }: Props) {
       display: 'flex',
       flexDirection: 'column',
     }}>
-      <h2 style={{
+      {/* Back link */}
+      <div style={{
+        padding: '8px 0',
         fontFamily: "'Bebas Neue', sans-serif",
-        fontSize: isMobile ? '1.3rem' : '1.8rem',
-        letterSpacing: '0.1em',
-        color: 'var(--gold)',
-        textAlign: 'center',
-        margin: isMobile ? '8px 0 4px' : '16px 0 8px',
-      }}>
-        THE CREDITS
-      </h2>
-      <p style={{
-        textAlign: 'center',
+        fontSize: '0.75rem',
+        letterSpacing: '0.2em',
         color: 'var(--text-muted)',
-        fontStyle: 'italic',
-        fontSize: isMobile ? '0.8rem' : '0.95rem',
-        marginBottom: isMobile ? 8 : 16,
+        cursor: 'pointer',
+      }} onClick={() => window.history.back()}>
+        ← RETURN TO DOSSIER
+      </div>
+
+      {/* Main cream card */}
+      <div style={{
+        background: 'var(--cream)',
+        border: '2px solid var(--cream-dark)',
+        padding: isMobile ? '16px' : '24px',
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
       }}>
-        Name the film from its credits
-      </p>
+        {/* Header row: poster thumbnail + case info + search */}
+        <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+          {/* Blurred poster thumbnail */}
+          <div style={{
+            width: isMobile ? 70 : 90,
+            flexShrink: 0,
+            border: '2px solid #333',
+            background: '#0D0A07',
+            overflow: 'hidden',
+            position: 'relative',
+          }}>
+            <img
+              src={movie.posterUrl}
+              alt="?"
+              style={{
+                width: '100%',
+                display: 'block',
+                filter: `blur(${gs.completed ? 0 : posterBlur}px)`,
+                transition: 'filter 0.6s ease',
+                transform: 'scale(1.15)',
+              }}
+            />
+            {!gs.completed && posterBlur > 30 && (
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--gold)',
+                fontSize: '1.5rem',
+                fontFamily: "'Playfair Display', serif",
+                textShadow: '0 0 10px rgba(0,0,0,0.8)',
+              }}>?</div>
+            )}
+          </div>
 
-      <RoundIndicator current={round} won={gs.won} />
-
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={round}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          style={{
-            background: 'rgba(28,23,20,0.6)',
-            border: '1px solid rgba(212,168,67,0.2)',
-            padding: isMobile ? '12px' : '20px',
-            margin: isMobile ? '8px 0' : '16px 0',
-            flex: 1,
-            minHeight: 0,
-            overflowY: 'auto',
-          }}
-        >
-          {clues}
-        </motion.div>
-      </AnimatePresence>
-
-      {/* Wrong guesses */}
-      {gs.guesses.length > 0 && (
-        <div style={{ marginBottom: 8, textAlign: 'center' }}>
-          {gs.guesses.map((g, i) => (
-            <span key={i} style={{
-              display: 'inline-block',
-              padding: '2px 8px',
-              margin: 2,
-              fontSize: isMobile ? '0.75rem' : '0.85rem',
-              color: g.toLowerCase() === movie.title.toLowerCase() ? '#4A8B5C' : '#8B3A3A',
-              border: `1px solid ${g.toLowerCase() === movie.title.toLowerCase() ? 'rgba(74,139,92,0.4)' : 'rgba(139,58,58,0.3)'}`,
-              fontFamily: "'Cormorant Garamond', serif",
-              textDecoration: g.toLowerCase() === movie.title.toLowerCase() ? 'none' : 'line-through',
+          {/* Case info + search */}
+          <div style={{ flex: 1 }}>
+            <h2 style={{
+              fontFamily: "'Playfair Display', Georgia, serif",
+              fontSize: isMobile ? '1.3rem' : '1.6rem',
+              color: '#6B1D2A',
+              fontWeight: 700,
+              margin: 0,
+              lineHeight: 1.1,
             }}>
-              {g}
-            </span>
-          ))}
-        </div>
-      )}
+              Case #{caseNumber}
+            </h2>
+            <p style={{
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: '0.65rem',
+              letterSpacing: '0.25em',
+              color: '#666',
+              margin: '2px 0 8px',
+            }}>
+              IDENTIFY THE MOTION PICTURE
+            </p>
 
-      {!gs.completed ? (
-        <div style={{ flexShrink: 0, paddingBottom: isMobile ? 8 : 16 }}>
-          <MovieSearch onSelect={handleGuess} placeholder={`Guess ${round} of 5...`} />
+            {!gs.completed && (
+              <>
+                <div style={{ position: 'relative' }}>
+                  <MovieSearch
+                    onSelect={handleGuess}
+                    placeholder="SEARCH EVIDENCE..."
+                    variant="cream"
+                  />
+                </div>
+                <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                  <button
+                    onClick={() => {/* submit handled by MovieSearch */}}
+                    style={{
+                      flex: 1,
+                      padding: '8px',
+                      fontFamily: "'Bebas Neue', sans-serif",
+                      fontSize: '0.85rem',
+                      letterSpacing: '0.15em',
+                      background: '#1a1a1a',
+                      color: '#fff',
+                      border: 'none',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    SUBMIT
+                  </button>
+                  <button
+                    onClick={handleHint}
+                    style={{
+                      padding: '8px 16px',
+                      fontFamily: "'Bebas Neue', sans-serif",
+                      fontSize: '0.85rem',
+                      letterSpacing: '0.1em',
+                      background: 'transparent',
+                      color: '#666',
+                      border: '1px solid #ccc',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Hint
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
-      ) : (
-        <GameResult won={gs.won} score={gs.score} movie={movie} isMobile={isMobile} />
-      )}
+
+        {/* Divider */}
+        <div style={{ height: 1, background: 'var(--cream-dark)', margin: '4px 0 16px' }} />
+
+        {/* Clues area */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={round}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            style={{ flex: 1 }}
+          >
+            {/* Director banner */}
+            <div style={{
+              background: 'linear-gradient(135deg, #2a2320, #1a1714)',
+              padding: isMobile ? '14px 16px' : '18px 24px',
+              textAlign: 'center',
+              marginBottom: 16,
+              borderRadius: 4,
+              position: 'relative',
+            }}>
+              <span style={{
+                display: 'inline-block',
+                fontFamily: "'Bebas Neue', sans-serif",
+                fontSize: '0.6rem',
+                letterSpacing: '0.3em',
+                color: '#6B1D2A',
+                background: 'var(--cream)',
+                padding: '2px 10px',
+                marginBottom: 6,
+              }}>
+                DIRECTOR
+              </span>
+              <p style={{
+                fontFamily: "'Playfair Display', Georgia, serif",
+                fontSize: isMobile ? '1.1rem' : '1.3rem',
+                color: 'var(--cream)',
+                fontWeight: 600,
+                margin: 0,
+              }}>
+                {movie.director}
+              </p>
+            </div>
+
+            {/* Screenplay (round 2+) */}
+            {showWriters && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                style={{ textAlign: 'center', marginBottom: 16 }}
+              >
+                <div style={{ height: 1, background: '#d4c5a9', marginBottom: 12 }} />
+                <span style={{
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontSize: '0.6rem',
+                  letterSpacing: '0.25em',
+                  color: '#8B6914',
+                }}>
+                  SCREENPLAY BY
+                </span>
+                <p style={{
+                  fontFamily: "'Playfair Display', Georgia, serif",
+                  fontSize: isMobile ? '0.9rem' : '1rem',
+                  color: '#333',
+                  fontStyle: 'italic',
+                  margin: '2px 0 0',
+                }}>
+                  {movie.writers.join(' & ')}
+                </p>
+              </motion.div>
+            )}
+
+            {/* Release year (round 3+) */}
+            {showYear && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                style={{ textAlign: 'center', marginBottom: 16 }}
+              >
+                <div style={{ height: 1, background: '#d4c5a9', marginBottom: 12 }} />
+                <span style={{
+                  display: 'inline-block',
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontSize: '0.6rem',
+                  letterSpacing: '0.3em',
+                  color: '#6B1D2A',
+                  background: '#f0e0c0',
+                  padding: '2px 10px',
+                  border: '1px solid #6B1D2A',
+                  marginBottom: 4,
+                }}>
+                  RELEASE YEAR
+                </span>
+                <p style={{
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontSize: '1.4rem',
+                  color: '#1a1a1a',
+                  letterSpacing: '0.1em',
+                  margin: 0,
+                }}>
+                  {movie.year}
+                </p>
+              </motion.div>
+            )}
+
+            {/* Cast polaroid cards */}
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: isMobile ? 8 : 12,
+              justifyContent: 'center',
+              marginTop: 8,
+            }}>
+              {visibleCast.map((member, i) => {
+                const headshot = getHeadshotUrl(member.profilePath);
+                return (
+                  <motion.div
+                    key={member.name}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                    style={{
+                      width: isMobile ? 'calc(33% - 6px)' : 110,
+                      background: '#fff',
+                      padding: 6,
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+                    }}
+                  >
+                    <div style={{
+                      width: '100%',
+                      aspectRatio: '3/4',
+                      background: '#222',
+                      overflow: 'hidden',
+                    }}>
+                      {headshot ? (
+                        <img
+                          src={headshot}
+                          alt={member.name}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                          }}
+                        />
+                      ) : (
+                        <div style={{
+                          width: '100%',
+                          height: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#666',
+                          fontSize: '2rem',
+                        }}>🎭</div>
+                      )}
+                    </div>
+                    <p style={{
+                      fontFamily: "'Bebas Neue', sans-serif",
+                      fontSize: isMobile ? '0.55rem' : '0.65rem',
+                      letterSpacing: '0.15em',
+                      color: '#333',
+                      textAlign: 'center',
+                      margin: '4px 0 0',
+                      lineHeight: 1.2,
+                    }}>
+                      {member.name.toUpperCase()}
+                    </p>
+                    {showCharacters && (
+                      <p style={{
+                        fontFamily: "'Cormorant Garamond', serif",
+                        fontSize: isMobile ? '0.6rem' : '0.7rem',
+                        color: '#888',
+                        textAlign: 'center',
+                        fontStyle: 'italic',
+                        margin: '1px 0 0',
+                        lineHeight: 1.2,
+                      }}>
+                        as {member.character}
+                      </p>
+                    )}
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Wrong guesses */}
+        {gs.guesses.length > 0 && (
+          <div style={{ marginTop: 12, textAlign: 'center' }}>
+            {gs.guesses.map((g, i) => (
+              <span key={i} style={{
+                display: 'inline-block',
+                padding: '2px 8px',
+                margin: 2,
+                fontSize: '0.75rem',
+                fontFamily: "'Bebas Neue', sans-serif",
+                letterSpacing: '0.05em',
+                color: g.toLowerCase() === movie.title.toLowerCase() ? '#4A8B5C' : '#8B3A3A',
+                textDecoration: g.toLowerCase() === movie.title.toLowerCase() ? 'none' : 'line-through',
+              }}>
+                {g}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Result */}
+        {gs.completed && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            style={{
+              textAlign: 'center',
+              padding: 16,
+              marginTop: 16,
+              background: gs.won ? 'rgba(74,139,92,0.08)' : 'rgba(139,58,58,0.08)',
+              border: `1px solid ${gs.won ? '#4A8B5C' : '#8B3A3A'}`,
+            }}
+          >
+            <p style={{
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: '0.9rem',
+              letterSpacing: '0.1em',
+              color: gs.won ? '#4A8B5C' : '#8B3A3A',
+            }}>
+              {gs.won ? 'CASE SOLVED!' : 'CASE REMAINS OPEN...'}
+            </p>
+            <p style={{
+              fontFamily: "'Playfair Display', Georgia, serif",
+              fontSize: '1.3rem',
+              color: '#1a1a1a',
+              fontWeight: 700,
+              margin: '4px 0',
+            }}>
+              {movie.title}
+            </p>
+            <p style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              color: '#666',
+              fontSize: '0.9rem',
+            }}>
+              {movie.year} · Directed by {movie.director}
+            </p>
+            {gs.won && (
+              <p style={{
+                fontFamily: "'Bebas Neue', sans-serif",
+                fontSize: '1.5rem',
+                color: '#8B6914',
+                marginTop: 4,
+              }}>
+                +{gs.score} PTS
+              </p>
+            )}
+          </motion.div>
+        )}
+      </div>
     </div>
-  );
-}
-
-function ClueSection({ label, value, isMobile }: { label: string; value: string; isMobile: boolean }) {
-  if (!value) return null;
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: -10 }}
-      animate={{ opacity: 1, x: 0 }}
-      style={{ marginBottom: isMobile ? 6 : 10 }}
-    >
-      <span style={{
-        fontFamily: "'Bebas Neue', sans-serif",
-        fontSize: isMobile ? '0.65rem' : '0.75rem',
-        letterSpacing: '0.15em',
-        color: 'var(--gold-dark)',
-      }}>
-        {label}
-      </span>
-      <p style={{
-        fontFamily: "'Cormorant Garamond', Georgia, serif",
-        fontSize: isMobile ? '0.9rem' : '1.1rem',
-        color: 'var(--cream)',
-        margin: '1px 0 0',
-      }}>
-        {value}
-      </p>
-    </motion.div>
-  );
-}
-
-function GameResult({ won, score, movie, isMobile }: { won: boolean; score: number; movie: Movie; isMobile: boolean }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      style={{
-        textAlign: 'center',
-        padding: isMobile ? '12px' : '24px',
-        margin: isMobile ? '8px 0' : '16px 0',
-        background: won
-          ? 'linear-gradient(135deg, rgba(74,139,92,0.1), rgba(28,23,20,0.9))'
-          : 'linear-gradient(135deg, rgba(139,58,58,0.1), rgba(28,23,20,0.9))',
-        border: `1px solid ${won ? 'rgba(74,139,92,0.4)' : 'rgba(139,58,58,0.3)'}`,
-      }}
-    >
-      <p style={{
-        fontFamily: "'Bebas Neue', sans-serif",
-        fontSize: isMobile ? '1rem' : '1.3rem',
-        letterSpacing: '0.1em',
-        color: won ? '#4A8B5C' : '#8B3A3A',
-      }}>
-        {won ? 'CORRECT!' : 'THE ANSWER WAS...'}
-      </p>
-      <p style={{
-        fontFamily: "'Playfair Display', Georgia, serif",
-        fontSize: isMobile ? '1.1rem' : '1.5rem',
-        color: 'var(--gold-light)',
-        margin: '4px 0',
-        fontWeight: 700,
-      }}>
-        {movie.title}
-      </p>
-      <p style={{
-        fontFamily: "'Cormorant Garamond', serif",
-        color: 'var(--text-muted)',
-        fontSize: isMobile ? '0.8rem' : '1rem',
-      }}>
-        {movie.year} · Directed by {movie.director}
-      </p>
-      {won && (
-        <p style={{
-          fontFamily: "'Bebas Neue', sans-serif",
-          fontSize: isMobile ? '1.4rem' : '2rem',
-          color: 'var(--gold)',
-          marginTop: 4,
-        }}>
-          +{score} PTS
-        </p>
-      )}
-    </motion.div>
   );
 }
