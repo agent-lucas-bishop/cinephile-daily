@@ -128,12 +128,12 @@ export function MovieSearch({ onSelect, disabled, placeholder = "Type a movie ti
       {showSuggestions && suggestions.length > 0 && (
         <div style={{
           position: 'absolute',
-          bottom: '100%',
+          top: '100%',
           left: 0,
           right: 0,
           background: isCream ? '#fff' : '#1C1714',
           border: `1px solid ${isCream ? '#d4c5a9' : 'var(--gold-dark)'}`,
-          borderBottom: 'none',
+          borderTop: 'none',
           zIndex: 100,
           maxHeight: 200,
           overflowY: 'auto',

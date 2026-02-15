@@ -104,7 +104,6 @@ export function CreditsGame({ movie, state, update }: Props) {
         display: 'flex',
         flexDirection: 'column',
         boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
-        overflow: 'hidden',
       }}>
         {/* Decorative double-line border inset */}
         <div style={{
