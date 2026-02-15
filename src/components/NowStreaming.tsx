@@ -8,12 +8,16 @@ interface Props {
   movieTitle: string;
 }
 
+const AMAZON_ASSOCIATE_TAG = 'codyp0c-20';
+
 function getProviderLink(providerName: string, movieTitle: string): string {
   const encoded = encodeURIComponent(movieTitle);
   const links: Record<string, string> = {
-    'Amazon Prime Video': `https://www.amazon.com/s?k=${encoded}&i=instant-video`,
+    'Amazon Prime Video': `https://www.amazon.com/s?k=${encoded}&i=instant-video&tag=${AMAZON_ASSOCIATE_TAG}`,
+    'Amazon Video': `https://www.amazon.com/s?k=${encoded}&i=instant-video&tag=${AMAZON_ASSOCIATE_TAG}`,
     'Apple TV': `https://tv.apple.com/search?term=${encoded}`,
-    'default': `https://www.google.com/search?q=watch+${encoded}+online`,
+    'Apple TV Plus': `https://tv.apple.com/search?term=${encoded}`,
+    'default': `https://www.amazon.com/s?k=${encoded}&i=instant-video&tag=${AMAZON_ASSOCIATE_TAG}`,
   };
   return links[providerName] || links['default'];
 }
