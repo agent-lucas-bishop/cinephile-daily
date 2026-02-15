@@ -98,7 +98,7 @@ export function ShareCard({ state, streaks, allDone }: ShareCardProps) {
             transition: 'background 0.3s, color 0.3s',
           }}
         >
-          {copied ? '✓ COPIED TO CLIPBOARD' : (isMobile ? '↗ SHARE RESULTS' : '📋 COPY RESULTS')}
+          {copied ? '✓ COPIED TO CLIPBOARD' : '↗ SHARE RESULTS'}
         </button>
       ) : (
         <div style={{
