@@ -1,0 +1,28 @@
+export const theme = {
+  colors: {
+    gold: '#D4A843',
+    goldLight: '#E8C97A',
+    goldDark: '#A67C2E',
+    amber: '#C8923C',
+    burgundy: '#6B1D2A',
+    burgundyDark: '#4A1320',
+    burgundyLight: '#8B2D3A',
+    cream: '#F5ECD7',
+    creamDark: '#E8D9B8',
+    sepia: '#D4B896',
+    charcoal: '#1A1A1A',
+    darkBg: '#0D0A07',
+    cardBg: '#1C1714',
+    cardBgLight: '#2A2320',
+    text: '#F5ECD7',
+    textMuted: '#A89A82',
+    textDim: '#6B5E4D',
+    success: '#4A8B5C',
+    error: '#8B3A3A',
+  },
+  fonts: {
+    display: "'Playfair Display', Georgia, serif",
+    body: "'Cormorant Garamond', Georgia, serif",
+    accent: "'Bebas Neue', sans-serif",
+  },
+} as const;
