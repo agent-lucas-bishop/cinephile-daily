@@ -6,6 +6,7 @@ import { getAllGameStreaks } from '../utils/storage';
 import { useIsMobile } from '../hooks/useMediaQuery';
 import { LoadingScreen } from '../components/LoadingScreen';
 import { ShareCard } from '../components/ShareCard';
+import { GenreBanner } from '../components/GenreBanner';
 
 const NOISE_SVG = `data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E`;
 
@@ -53,28 +54,8 @@ export function Home() {
       display: 'flex',
       flexDirection: 'column',
     }}>
-      {/* Category label */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        style={{
-          textAlign: 'center',
-          margin: isMobile ? '8px 0 20px' : '12px 0 28px',
-        }}
-      >
-        <span style={{
-          fontFamily: "'Bebas Neue', sans-serif",
-          fontSize: isMobile ? '0.7rem' : '0.8rem',
-          letterSpacing: '0.3em',
-          color: '#666',
-          padding: '4px 16px',
-          border: '1px solid #555',
-          display: 'inline-block',
-          background: 'rgba(0,0,0,0.3)',
-        }}>
-          SELECT CATEGORY
-        </span>
-      </motion.div>
+      {/* Genre banner */}
+      {genre && <GenreBanner genre={genre} />}
 
       {/* Game cards */}
       <div style={{
@@ -254,19 +235,6 @@ export function Home() {
           </div>
         </motion.div>
 
-      {/* Today's genre badge */}
-      {genre && (
-        <div style={{
-          textAlign: 'center',
-          marginTop: 20,
-          fontFamily: "'Bebas Neue', sans-serif",
-          fontSize: '0.65rem',
-          letterSpacing: '0.2em',
-          color: 'var(--text-dim)',
-        }}>
-          TODAY'S GENRE · {genre.toUpperCase()}
-        </div>
-      )}
     </div>
   );
 }
