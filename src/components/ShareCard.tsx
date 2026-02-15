@@ -52,6 +52,7 @@ export function ShareCard({ state, streaks, allDone }: ShareCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [generating, setGenerating] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [copiedImage, setCopiedImage] = useState(false);
   const isMobile = useIsMobile();
   const gs = state.games;
   const totalScore = gs.credits.score + gs.poster.score + gs.year.score;
@@ -96,26 +97,41 @@ export function ShareCard({ state, streaks, allDone }: ShareCardProps) {
     if (blob) downloadBlob(blob);
   }, [generateImage]);
 
-  const handleTwitter = useCallback(() => {
-    const text = encodeURIComponent(shareText(gs, streaks));
-    window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
-  }, [gs, streaks]);
+  const copyImageToClipboard = useCallback(async (): Promise<boolean> => {
+    const blob = await generateImage();
+    if (!blob) return false;
+    try {
+      await navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': blob }),
+      ]);
+      return true;
+    } catch {
+      // Clipboard image write not supported — fall back to download
+      downloadBlob(blob);
+      return false;
+    }
+  }, [generateImage]);
 
-  const handleFacebook = useCallback(() => {
-    const url = encodeURIComponent(SITE_URL);
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
-  }, []);
+  const handlePlatformShare = useCallback(async (platform: 'twitter' | 'facebook' | 'reddit' | 'threads') => {
+    setGenerating(true);
+    const copied = await copyImageToClipboard();
+    setGenerating(false);
+    
+    if (copied) {
+      setCopiedImage(true);
+      setTimeout(() => setCopiedImage(false), 3000);
+    }
 
-  const handleReddit = useCallback(() => {
-    const title = encodeURIComponent(`🎬 Cinéphile Daily — ${totalScore}/15`);
-    const url = encodeURIComponent(SITE_URL);
-    window.open(`https://www.reddit.com/submit?url=${url}&title=${title}`, '_blank');
-  }, [totalScore]);
+    const text = shareText(gs, streaks);
+    const urls: Record<string, string> = {
+      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(SITE_URL)}`,
+      reddit: `https://www.reddit.com/submit?url=${encodeURIComponent(SITE_URL)}&title=${encodeURIComponent(`🎬 Cinéphile Daily — ${totalScore}/15`)}`,
+      threads: `https://www.threads.net/intent/post?text=${encodeURIComponent(text)}`,
+    };
 
-  const handleThreads = useCallback(() => {
-    const text = encodeURIComponent(shareText(gs, streaks));
-    window.open(`https://www.threads.net/intent/post?text=${text}`, '_blank');
-  }, [gs, streaks]);
+    window.open(urls[platform], '_blank');
+  }, [gs, streaks, totalScore, copyImageToClipboard]);
 
   const handleCopyLink = useCallback(() => {
     navigator.clipboard.writeText(SITE_URL).then(() => {
@@ -268,6 +284,22 @@ export function ShareCard({ state, streaks, allDone }: ShareCardProps) {
         </div>
       </div>
 
+      {/* Image copied toast */}
+      {copiedImage && (
+        <div style={{
+          marginTop: 8,
+          padding: '8px 12px',
+          background: '#4A8B5C',
+          color: '#fff',
+          fontFamily: "'Bebas Neue', sans-serif",
+          fontSize: '0.8rem',
+          letterSpacing: '0.15em',
+          textAlign: 'center',
+        }}>
+          📋 IMAGE COPIED TO CLIPBOARD — PASTE IT IN YOUR POST
+        </div>
+      )}
+
       {/* Share buttons or incomplete message */}
       {allDone ? (
         <div style={{
@@ -286,10 +318,10 @@ export function ShareCard({ state, streaks, allDone }: ShareCardProps) {
             />
           ) : (
             <>
-              <ShareButton onClick={handleTwitter} icon="𝕏" label="POST ON X" primary />
-              <ShareButton onClick={handleFacebook} icon="f" label="FACEBOOK" />
-              <ShareButton onClick={handleReddit} icon="⬆" label="REDDIT" />
-              <ShareButton onClick={handleThreads} icon="@" label="THREADS" />
+              <ShareButton onClick={() => handlePlatformShare('twitter')} icon="𝕏" label={generating ? 'COPYING...' : 'POST ON X'} primary />
+              <ShareButton onClick={() => handlePlatformShare('facebook')} icon="f" label="FACEBOOK" />
+              <ShareButton onClick={() => handlePlatformShare('reddit')} icon="⬆" label="REDDIT" />
+              <ShareButton onClick={() => handlePlatformShare('threads')} icon="@" label="THREADS" />
             </>
           )}
           <ShareButton onClick={handleCopyLink} icon="🔗" label={copiedLink ? 'COPIED!' : 'COPY LINK'} />
