@@ -162,13 +162,6 @@ export function MovieSearch({ onSelect, disabled, placeholder = "Type a movie ti
               onMouseEnter={() => setSelectedIdx(i)}
             >
               <span>{s.title}</span>
-              {s.year && (
-                <span style={{
-                  fontSize: '0.8rem',
-                  opacity: 0.6,
-                  marginLeft: 8,
-                }}>({s.year})</span>
-              )}
             </div>
           ))}
         </div>
