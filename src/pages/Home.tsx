@@ -4,9 +4,10 @@ import { useDailyPuzzle } from '../hooks/useDailyPuzzle';
 import { useGameState } from '../hooks/useGameState';
 import { getStats } from '../utils/storage';
 import { useIsMobile } from '../hooks/useMediaQuery';
+import { LoadingScreen } from '../components/LoadingScreen';
 
 export function Home() {
-  const { genre } = useDailyPuzzle();
+  const { genre, loading } = useDailyPuzzle();
   const { state } = useGameState();
   const stats = getStats();
   const gs = state.games;
@@ -14,6 +15,8 @@ export function Home() {
   const allDone = gs.credits.completed && gs.poster.completed && gs.year.completed;
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+
+  if (loading) return <LoadingScreen />;
 
   return (
     <div style={{
@@ -60,7 +63,7 @@ export function Home() {
         <StatItem label="TOTAL" value={stats.totalScore} isMobile={isMobile} />
       </div>
 
-      {/* Game cards - cream panels */}
+      {/* Game cards */}
       <div style={{
         display: 'flex',
         flexDirection: 'column',
@@ -146,16 +149,18 @@ export function Home() {
       )}
 
       {/* Today's genre badge */}
-      <div style={{
-        textAlign: 'center',
-        marginTop: 16,
-        fontFamily: "'Bebas Neue', sans-serif",
-        fontSize: '0.65rem',
-        letterSpacing: '0.2em',
-        color: 'var(--text-dim)',
-      }}>
-        TODAY'S GENRE · {genre.toUpperCase()}
-      </div>
+      {genre && (
+        <div style={{
+          textAlign: 'center',
+          marginTop: 16,
+          fontFamily: "'Bebas Neue', sans-serif",
+          fontSize: '0.65rem',
+          letterSpacing: '0.2em',
+          color: 'var(--text-dim)',
+        }}>
+          TODAY'S GENRE · {genre.toUpperCase()}
+        </div>
+      )}
     </div>
   );
 }
@@ -217,7 +222,6 @@ function CategoryCard({ title, subtitle: _subtitle, icon, path, score, completed
       whileHover={{ scale: 1.01, boxShadow: '0 4px 20px rgba(0,0,0,0.2)' }}
       whileTap={{ scale: 0.99 }}
     >
-      {/* Icon in circle */}
       <div style={{
         width: 48,
         height: 48,

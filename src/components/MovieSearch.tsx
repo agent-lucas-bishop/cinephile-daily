@@ -1,5 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
-import { allMovieTitles } from '../data/movies';
+
+interface SearchResult {
+  id: number;
+  title: string;
+  year: number | null;
+}
 
 interface Props {
   onSelect: (title: string) => void;
@@ -10,23 +15,34 @@ interface Props {
 
 export function MovieSearch({ onSelect, disabled, placeholder = "Type a movie title...", variant = 'dark' }: Props) {
   const [query, setQuery] = useState('');
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [suggestions, setSuggestions] = useState<SearchResult[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const isCream = variant === 'cream';
 
   useEffect(() => {
-    if (query.length < 1) {
+    if (query.length < 2) {
       setSuggestions([]);
       return;
     }
-    const q = query.toLowerCase();
-    const matches = allMovieTitles.filter(t => t.toLowerCase().includes(q)).slice(0, 5);
-    setSuggestions(matches);
-    setSelectedIdx(-1);
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/search-movies?q=${encodeURIComponent(query)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setSuggestions(data.results ?? []);
+          setSelectedIdx(-1);
+        }
+      } catch {
+        // ignore
+      }
+    }, 250);
+    return () => clearTimeout(debounceRef.current);
   }, [query]);
 
   useEffect(() => {
@@ -57,9 +73,9 @@ export function MovieSearch({ onSelect, disabled, placeholder = "Type a movie ti
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (selectedIdx >= 0 && suggestions[selectedIdx]) {
-        submit(suggestions[selectedIdx]);
+        submit(suggestions[selectedIdx].title);
       } else if (suggestions.length === 1) {
-        submit(suggestions[0]);
+        submit(suggestions[0].title);
       }
     } else if (e.key === 'Escape') {
       setShowSuggestions(false);
@@ -124,8 +140,8 @@ export function MovieSearch({ onSelect, disabled, placeholder = "Type a movie ti
         }}>
           {suggestions.map((s, i) => (
             <div
-              key={s}
-              onClick={() => submit(s)}
+              key={`${s.id}-${s.title}`}
+              onClick={() => submit(s.title)}
               style={{
                 padding: '12px 16px',
                 cursor: 'pointer',
@@ -141,10 +157,18 @@ export function MovieSearch({ onSelect, disabled, placeholder = "Type a movie ti
                 minHeight: 44,
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'space-between',
               }}
               onMouseEnter={() => setSelectedIdx(i)}
             >
-              {s}
+              <span>{s.title}</span>
+              {s.year && (
+                <span style={{
+                  fontSize: '0.8rem',
+                  opacity: 0.6,
+                  marginLeft: 8,
+                }}>({s.year})</span>
+              )}
             </div>
           ))}
         </div>

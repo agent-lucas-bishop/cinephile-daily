@@ -1,16 +1,46 @@
-import { useMemo } from 'react';
-import { movies } from '../data/movies';
-import { getDailyMovieIndices } from '../utils/dailySeed';
-import type { Movie } from '../data/movies';
+import { useState, useEffect } from 'react';
+import type { Movie } from '../types/movie';
 
-const GENRES = ['Action', 'Comedy', 'Drama', 'Sci-Fi', 'Horror', 'Thriller'] as const;
+interface DailyPuzzleData {
+  movies: [Movie, Movie, Movie];
+  genre: string;
+  loading: boolean;
+  error: string | null;
+}
 
-export function useDailyPuzzle() {
-  return useMemo(() => {
-    const [i1, i2, i3] = getDailyMovieIndices(movies.length);
-    const dailyMovies: [Movie, Movie, Movie] = [movies[i1], movies[i2], movies[i3]];
-    const seed = new Date().getDay();
-    const genre = GENRES[seed % GENRES.length];
-    return { movies: dailyMovies, genre };
+export function useDailyPuzzle(): DailyPuzzleData {
+  const [data, setData] = useState<{ movies: [Movie, Movie, Movie]; genre: string } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/daily-puzzle')
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then(json => {
+        if (cancelled) return;
+        setData({ movies: json.movies as [Movie, Movie, Movie], genre: json.genre });
+        setLoading(false);
+      })
+      .catch(err => {
+        if (cancelled) return;
+        setError(err.message);
+        setLoading(false);
+      });
+    return () => { cancelled = true; };
   }, []);
+
+  if (data) {
+    return { ...data, loading: false, error: null };
+  }
+  // Return placeholder while loading
+  return {
+    movies: [null as unknown as Movie, null as unknown as Movie, null as unknown as Movie],
+    genre: '',
+    loading,
+    error,
+  };
 }

@@ -3,8 +3,8 @@ import { MovieSearch } from '../components/MovieSearch';
 import { getScore } from '../utils/scoring';
 import { updateStatsAfterGame } from '../utils/storage';
 import { useIsMobile } from '../hooks/useMediaQuery';
-import { getHeadshotUrl } from '../data/movies';
-import type { Movie } from '../data/movies';
+import { getHeadshotUrl } from '../types/movie';
+import type { Movie } from '../types/movie';
 import type { DailyState } from '../utils/storage';
 
 interface Props {
