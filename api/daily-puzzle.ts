@@ -208,9 +208,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Fetch full details for all 3 movies in parallel
     const movies = await Promise.all(picks.map(async (pick) => {
-      const [details, keywords] = await Promise.all([
+      const [details, keywords, providers] = await Promise.all([
         fetchJson(`${TMDB}/movie/${pick.id}?api_key=${TMDB_KEY}&append_to_response=credits`),
         fetchJson(`${TMDB}/movie/${pick.id}/keywords?api_key=${TMDB_KEY}`),
+        fetchJson(`${TMDB}/movie/${pick.id}/watch/providers?api_key=${TMDB_KEY}`),
       ]);
 
       const director = details.credits?.crew?.find((c: { job: string }) => c.job === 'Director');
@@ -237,6 +238,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         overview: details.overview ?? '',
         plotKeywords: (keywords.keywords ?? []).slice(0, 5).map((k: { name: string }) => k.name),
         posterUrl: details.poster_path ? `${POSTER}${details.poster_path}` : '',
+        watchProviders: (() => {
+          const us = providers.results?.US;
+          if (!us) return [];
+          const wp: { id: number; name: string; logoUrl: string; type: 'stream' | 'rent' | 'buy' }[] = [];
+          const seen = new Set<number>();
+          const add = (arr: { provider_id: number; provider_name: string; logo_path: string }[] | undefined, type: 'stream' | 'rent' | 'buy') => {
+            for (const p of arr ?? []) {
+              if (!seen.has(p.provider_id)) {
+                seen.add(p.provider_id);
+                wp.push({ id: p.provider_id, name: p.provider_name, logoUrl: `https://image.tmdb.org/t/p/original${p.logo_path}`, type });
+              }
+            }
+          };
+          add(us.flatrate, 'stream');
+          add(us.rent, 'rent');
+          add(us.buy, 'buy');
+          return wp;
+        })(),
       };
     }));
 

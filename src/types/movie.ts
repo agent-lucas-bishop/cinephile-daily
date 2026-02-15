@@ -1,3 +1,10 @@
+export interface WatchProvider {
+  id: number;
+  name: string;
+  logoUrl: string;
+  type: 'stream' | 'rent' | 'buy';
+}
+
 export interface CastMember {
   name: string;
   character: string;
@@ -17,6 +24,7 @@ export interface Movie {
   overview?: string;
   plotKeywords: string[];
   posterUrl: string;
+  watchProviders: WatchProvider[];
 }
 
 export function getHeadshotUrl(profilePath: string | null): string | null {

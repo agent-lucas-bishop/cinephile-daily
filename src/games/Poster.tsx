@@ -3,6 +3,7 @@ import { MovieSearch } from '../components/MovieSearch';
 import { getScore } from '../utils/scoring';
 import { updateStatsAfterGame, updateGameStreak } from '../utils/storage';
 import { useIsMobile } from '../hooks/useMediaQuery';
+import { NowStreaming } from '../components/NowStreaming';
 import type { Movie } from '../types/movie';
 import type { DailyState } from '../utils/storage';
 
@@ -328,6 +329,14 @@ export function PosterGame({ movie, state, update }: Props) {
                 </p>
               )}
             </motion.div>
+          )}
+
+          {gs.completed && (
+            <NowStreaming
+              providers={movie.watchProviders}
+              completed={gs.completed}
+              movieTitle={movie.title}
+            />
           )}
         </div>
       </div>
