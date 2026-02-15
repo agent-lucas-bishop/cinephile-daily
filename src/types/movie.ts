@@ -24,6 +24,7 @@ export interface Movie {
   overview?: string;
   plotKeywords: string[];
   posterUrl: string;
+  rating: number;
   watchProviders: WatchProvider[];
 }
 

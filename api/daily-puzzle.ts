@@ -238,6 +238,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         overview: details.overview ?? '',
         plotKeywords: (keywords.keywords ?? []).slice(0, 5).map((k: { name: string }) => k.name),
         posterUrl: details.poster_path ? `${POSTER}${details.poster_path}` : '',
+        rating: Math.round((details.vote_average ?? 0) * 10) / 10,
         watchProviders: (() => {
           const us = providers.results?.US;
           if (!us) return [];

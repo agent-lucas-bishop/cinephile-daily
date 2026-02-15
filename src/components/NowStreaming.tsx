@@ -5,7 +5,11 @@ import type { WatchProvider } from '../types/movie';
 interface Props {
   providers: WatchProvider[];
   completed: boolean;
+  won: boolean;
   movieTitle: string;
+  rating: number;
+  tagline?: string;
+  overview?: string;
 }
 
 const AMAZON_ASSOCIATE_TAG = 'codyp0c-20';
@@ -28,7 +32,36 @@ const TYPE_LABELS: Record<string, string> = {
   buy: 'BUY',
 };
 
-export function NowStreaming({ providers, completed, movieTitle }: Props) {
+function StarRating({ rating }: { rating: number }) {
+  const stars = Math.round(rating / 2); // Convert 0-10 to 0-5
+  return (
+    <div style={{ display: 'flex', gap: 2, justifyContent: 'center', margin: '4px 0' }}>
+      {Array.from({ length: 5 }).map((_, i) => (
+        <span key={i} style={{
+          fontSize: '1rem',
+          color: i < stars ? '#C5A059' : '#d4cfc4',
+        }}>
+          ★
+        </span>
+      ))}
+      <span style={{
+        fontFamily: "'Bebas Neue', sans-serif",
+        fontSize: '0.85rem',
+        color: '#C5A059',
+        marginLeft: 6,
+      }}>
+        {rating}/10
+      </span>
+    </div>
+  );
+}
+
+function truncateOverview(text: string, maxLen: number): string {
+  if (text.length <= maxLen) return text;
+  return text.substring(0, text.lastIndexOf(' ', maxLen)) + '…';
+}
+
+export function NowStreaming({ providers, completed, won, movieTitle, rating, tagline, overview }: Props) {
   const isMobile = useIsMobile();
 
   if (!completed) return null;
@@ -64,14 +97,55 @@ export function NowStreaming({ providers, completed, movieTitle }: Props) {
       }} />
 
       <div style={{ position: 'relative', zIndex: 10 }}>
+        {/* Context-aware header */}
         <p style={{
           fontFamily: "'Bebas Neue', sans-serif",
-          fontSize: isMobile ? '1rem' : '1.1rem',
+          fontSize: isMobile ? '0.7rem' : '0.75rem',
+          letterSpacing: '0.25em',
+          color: '#999',
+          margin: '0 0 4px',
+        }}>
+          {won ? 'RELIVE THE CLASSIC' : 'DISCOVER THIS FILM'}
+        </p>
+
+        {/* Rating */}
+        {rating > 0 && <StarRating rating={rating} />}
+
+        {/* Tagline or overview snippet */}
+        {won && tagline && (
+          <p style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: '0.9rem',
+            color: '#555',
+            fontStyle: 'italic',
+            margin: '8px 0 12px',
+          }}>
+            "{tagline}"
+          </p>
+        )}
+        {!won && overview && (
+          <p style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: '0.85rem',
+            color: '#555',
+            margin: '8px 0 12px',
+            lineHeight: 1.5,
+          }}>
+            {truncateOverview(overview, 150)}
+          </p>
+        )}
+
+        {/* Divider */}
+        <div style={{ height: 1, background: '#d4c5a9', margin: '12px 0' }} />
+
+        <p style={{
+          fontFamily: "'Bebas Neue', sans-serif",
+          fontSize: isMobile ? '0.85rem' : '0.9rem',
           letterSpacing: '0.2em',
           color: '#C5A059',
           margin: '0 0 12px',
         }}>
-          🎬 NOW STREAMING ON
+          {won ? '🎬 WATCH IT AGAIN' : '🎬 STREAM IT NOW'}
         </p>
 
         {hasProviders ? (

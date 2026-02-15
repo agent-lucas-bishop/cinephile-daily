@@ -514,6 +514,10 @@ export function CreditsGame({ movie, state, update }: Props) {
           <NowStreaming
             providers={movie.watchProviders}
             completed={gs.completed}
+            won={gs.won}
+            rating={movie.rating}
+            tagline={movie.tagline}
+            overview={movie.overview}
             movieTitle={movie.title}
           />
         )}
