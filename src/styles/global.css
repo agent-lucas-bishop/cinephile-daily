@@ -5,20 +5,22 @@
 }
 
 :root {
-  --gold: #D4A843;
-  --gold-light: #E8C97A;
+  --gold: #C5A059;
+  --gold-light: #D4B06A;
   --gold-dark: #A67C2E;
-  --burgundy: #6B1D2A;
+  --burgundy: #720e0e;
   --burgundy-dark: #4A1320;
-  --cream: #F5ECD7;
-  --cream-dark: #E8D9B8;
+  --cream: #F4F1EA;
+  --cream-dark: #E6E2D6;
   --sepia: #D4B896;
   --charcoal: #1A1A1A;
-  --dark-bg: #0D0A07;
+  --dark-bg: #0a0a0a;
   --card-bg: #1C1714;
-  --text: #F5ECD7;
+  --text: #F4F1EA;
   --text-muted: #A89A82;
   --text-dim: #6B5E4D;
+  --ink: #1A1A1A;
+  --paper: #F4F1EA;
 }
 
 html {
@@ -35,16 +37,26 @@ body {
   overflow-x: hidden;
 }
 
-/* Art deco background pattern */
+/* Cinematic vignette */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background:
-    radial-gradient(ellipse at 50% 0%, rgba(212,168,67,0.06) 0%, transparent 60%),
-    radial-gradient(ellipse at 50% 100%, rgba(107,29,42,0.08) 0%, transparent 60%);
+  background: radial-gradient(circle at center, transparent 0%, #000000 100%);
   pointer-events: none;
   z-index: 0;
+}
+
+/* Film grain overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E");
 }
 
 #root {
@@ -91,7 +103,6 @@ input {
     font-size: 16px !important;
   }
   
-  /* Use dynamic viewport height */
   body, #root {
     min-height: 100dvh;
   }

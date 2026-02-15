@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { MovieSearch } from '../components/MovieSearch';
 import { getScore } from '../utils/scoring';
-import { updateStatsAfterGame } from '../utils/storage';
+import { updateStatsAfterGame, updateGameStreak } from '../utils/storage';
 import { useIsMobile } from '../hooks/useMediaQuery';
 import { getHeadshotUrl } from '../types/movie';
 import type { Movie } from '../types/movie';
@@ -32,10 +32,12 @@ export function CreditsGame({ movie, state, update }: Props) {
         g.won = true;
         g.score = getScore(g.round);
         updateStatsAfterGame(g.score);
+        updateGameStreak('credits', g.score, true);
       } else if (g.round >= 5) {
         g.completed = true;
         g.won = false;
         g.score = 0;
+        updateGameStreak('credits', 0, false);
       } else {
         g.round += 1;
       }

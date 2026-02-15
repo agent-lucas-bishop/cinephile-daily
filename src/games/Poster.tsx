@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { MovieSearch } from '../components/MovieSearch';
 import { getScore } from '../utils/scoring';
-import { updateStatsAfterGame } from '../utils/storage';
+import { updateStatsAfterGame, updateGameStreak } from '../utils/storage';
 import { useIsMobile } from '../hooks/useMediaQuery';
 import type { Movie } from '../types/movie';
 import type { DailyState } from '../utils/storage';
@@ -30,10 +30,12 @@ export function PosterGame({ movie, state, update }: Props) {
         g.won = true;
         g.score = getScore(g.round);
         updateStatsAfterGame(g.score);
+        updateGameStreak('poster', g.score, true);
       } else if (g.round >= 5) {
         g.completed = true;
         g.won = false;
         g.score = 0;
+        updateGameStreak('poster', 0, false);
       } else {
         g.round += 1;
       }
