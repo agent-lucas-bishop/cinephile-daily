@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Header } from './components/Header';
 import { FilmStrip } from './components/FilmStrip';
 import { Home } from './pages/Home';
@@ -32,6 +34,8 @@ export default function App() {
           </Routes>
         </div>
       </div>
+      <Analytics />
+      <SpeedInsights />
     </BrowserRouter>
   );
 }
