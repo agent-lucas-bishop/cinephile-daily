@@ -77,18 +77,6 @@ export function PosterGame({ movie, state, update }: Props) {
       display: 'flex',
       flexDirection: 'column',
     }}>
-      {/* Back link */}
-      <div style={{
-        padding: '16px 0 8px',
-        fontFamily: "'Bebas Neue', sans-serif",
-        fontSize: '0.75rem',
-        letterSpacing: '0.2em',
-        color: 'var(--text-muted)',
-        cursor: 'pointer',
-      }} onClick={() => window.history.back()}>
-        ← RETURN TO DOSSIER
-      </div>
-
       {/* Darkroom poster area */}
       <div style={{
         position: 'relative',

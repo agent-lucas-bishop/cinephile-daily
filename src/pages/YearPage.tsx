@@ -11,6 +11,22 @@ export function YearPage() {
   if (error || !movies[2]) return <div style={{ padding: 40, textAlign: 'center', color: '#8B3A3A' }}>Failed to load puzzle data.</div>;
   return (
     <>
+      <div style={{
+        maxWidth: 500,
+        margin: '0 auto',
+        width: '100%',
+        padding: '16px 4px 0',
+      }}>
+        <div style={{
+          fontFamily: "'Bebas Neue', sans-serif",
+          fontSize: '0.75rem',
+          letterSpacing: '0.2em',
+          color: 'var(--text-muted)',
+          cursor: 'pointer',
+        }} onClick={() => window.history.back()}>
+          ← RETURN TO DOSSIER
+        </div>
+      </div>
       {genre && <GenreBanner genre={genre} />}
       <YearGame movie={movies[2]} state={state} update={update} />
     </>
