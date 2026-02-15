@@ -13,6 +13,7 @@ export function MovieSearch({ onSelect, disabled, placeholder = "Type a movie ti
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (query.length < 1) {
@@ -20,16 +21,28 @@ export function MovieSearch({ onSelect, disabled, placeholder = "Type a movie ti
       return;
     }
     const q = query.toLowerCase();
-    const matches = allMovieTitles.filter(t => t.toLowerCase().includes(q)).slice(0, 6);
+    const matches = allMovieTitles.filter(t => t.toLowerCase().includes(q)).slice(0, 5);
     setSuggestions(matches);
     setSelectedIdx(-1);
   }, [query]);
+
+  // Close suggestions on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const submit = (title: string) => {
     onSelect(title);
     setQuery('');
     setSuggestions([]);
     setShowSuggestions(false);
+    inputRef.current?.blur();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -52,7 +65,7 @@ export function MovieSearch({ onSelect, disabled, placeholder = "Type a movie ti
   };
 
   return (
-    <div style={{ position: 'relative', width: '100%', maxWidth: 400, margin: '0 auto' }}>
+    <div ref={containerRef} style={{ position: 'relative', width: '100%', maxWidth: 400, margin: '0 auto' }}>
       <input
         ref={inputRef}
         value={query}
@@ -61,16 +74,24 @@ export function MovieSearch({ onSelect, disabled, placeholder = "Type a movie ti
         onKeyDown={handleKeyDown}
         disabled={disabled}
         placeholder={placeholder}
+        autoComplete="off"
+        autoCorrect="off"
+        autoCapitalize="off"
+        spellCheck={false}
+        enterKeyHint="go"
         style={{
           width: '100%',
           padding: '12px 16px',
-          fontSize: '1.1rem',
+          fontSize: '1rem',
           fontFamily: "'Cormorant Garamond', Georgia, serif",
           background: 'rgba(28, 23, 20, 0.9)',
           border: '1px solid var(--gold-dark)',
           color: 'var(--cream)',
           outline: 'none',
           transition: 'border-color 0.2s',
+          boxSizing: 'border-box',
+          borderRadius: 0,
+          WebkitAppearance: 'none',
         }}
         onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--gold)')}
         onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--gold-dark)')}
@@ -78,14 +99,14 @@ export function MovieSearch({ onSelect, disabled, placeholder = "Type a movie ti
       {showSuggestions && suggestions.length > 0 && (
         <div style={{
           position: 'absolute',
-          top: '100%',
+          bottom: '100%',
           left: 0,
           right: 0,
           background: '#1C1714',
           border: '1px solid var(--gold-dark)',
-          borderTop: 'none',
+          borderBottom: 'none',
           zIndex: 100,
-          maxHeight: 240,
+          maxHeight: 200,
           overflowY: 'auto',
         }}>
           {suggestions.map((s, i) => (
@@ -93,13 +114,16 @@ export function MovieSearch({ onSelect, disabled, placeholder = "Type a movie ti
               key={s}
               onClick={() => submit(s)}
               style={{
-                padding: '10px 16px',
+                padding: '12px 16px',
                 cursor: 'pointer',
-                fontSize: '1rem',
+                fontSize: '0.95rem',
                 fontFamily: "'Cormorant Garamond', Georgia, serif",
                 background: i === selectedIdx ? 'rgba(212,168,67,0.15)' : 'transparent',
                 color: i === selectedIdx ? 'var(--gold-light)' : 'var(--cream)',
                 borderBottom: '1px solid rgba(212,168,67,0.1)',
+                minHeight: 44,
+                display: 'flex',
+                alignItems: 'center',
               }}
               onMouseEnter={() => setSelectedIdx(i)}
             >

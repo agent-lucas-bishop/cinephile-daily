@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { RoundIndicator } from '../components/RoundIndicator';
 import { getScore } from '../utils/scoring';
 import { updateStatsAfterGame } from '../utils/storage';
+import { useIsMobile } from '../hooks/useMediaQuery';
 import type { Movie } from '../data/movies';
 import type { DailyState } from '../utils/storage';
 
@@ -16,6 +17,7 @@ export function YearGame({ movie, state, update }: Props) {
   const gs = state.games.year;
   const [inputYear, setInputYear] = useState('');
   const [hint, setHint] = useState<string | null>(null);
+  const isMobile = useIsMobile();
 
   const handleGuess = () => {
     const year = parseInt(inputYear, 10);
@@ -51,14 +53,22 @@ export function YearGame({ movie, state, update }: Props) {
   };
 
   return (
-    <div style={{ padding: '0 20px', maxWidth: 500, margin: '0 auto' }}>
+    <div style={{
+      padding: isMobile ? '0 4px' : '0 20px',
+      maxWidth: 500,
+      margin: '0 auto',
+      width: '100%',
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+    }}>
       <h2 style={{
         fontFamily: "'Bebas Neue', sans-serif",
-        fontSize: '1.8rem',
+        fontSize: isMobile ? '1.3rem' : '1.8rem',
         letterSpacing: '0.1em',
         color: 'var(--gold)',
         textAlign: 'center',
-        margin: '16px 0 8px',
+        margin: isMobile ? '8px 0 4px' : '16px 0 8px',
       }}>
         THE YEAR
       </h2>
@@ -66,8 +76,8 @@ export function YearGame({ movie, state, update }: Props) {
         textAlign: 'center',
         color: 'var(--text-muted)',
         fontStyle: 'italic',
-        fontSize: '0.95rem',
-        marginBottom: 16,
+        fontSize: isMobile ? '0.8rem' : '0.95rem',
+        marginBottom: isMobile ? 8 : 16,
       }}>
         When was this film released?
       </p>
@@ -77,11 +87,17 @@ export function YearGame({ movie, state, update }: Props) {
       {/* Movie info */}
       <div style={{
         textAlign: 'center',
-        margin: '20px 0',
+        margin: isMobile ? '8px 0' : '20px 0',
+        flex: gs.completed ? undefined : 1,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: 0,
       }}>
         <div style={{
-          maxWidth: 200,
-          margin: '0 auto 16px',
+          maxWidth: isMobile ? 140 : 200,
+          margin: isMobile ? '0 auto 8px' : '0 auto 16px',
           border: '2px solid var(--gold-dark)',
           overflow: 'hidden',
         }}>
@@ -93,7 +109,7 @@ export function YearGame({ movie, state, update }: Props) {
         </div>
         <h3 style={{
           fontFamily: "'Playfair Display', Georgia, serif",
-          fontSize: '1.5rem',
+          fontSize: isMobile ? '1.1rem' : '1.5rem',
           color: 'var(--gold-light)',
           fontWeight: 700,
         }}>
@@ -103,6 +119,7 @@ export function YearGame({ movie, state, update }: Props) {
           fontFamily: "'Cormorant Garamond', serif",
           color: 'var(--text-muted)',
           marginTop: 4,
+          fontSize: isMobile ? '0.85rem' : '1rem',
         }}>
           Directed by {movie.director}
         </p>
@@ -110,13 +127,13 @@ export function YearGame({ movie, state, update }: Props) {
 
       {/* Previous guesses */}
       {gs.yearGuesses.length > 0 && (
-        <div style={{ marginBottom: 12, textAlign: 'center' }}>
+        <div style={{ marginBottom: 8, textAlign: 'center' }}>
           {gs.yearGuesses.map((y, i) => (
             <span key={i} style={{
               display: 'inline-block',
-              padding: '4px 12px',
-              margin: 3,
-              fontSize: '1rem',
+              padding: '3px 10px',
+              margin: 2,
+              fontSize: isMobile ? '0.85rem' : '1rem',
               fontFamily: "'Bebas Neue', sans-serif",
               letterSpacing: '0.05em',
               color: y === movie.year ? '#4A8B5C' : '#8B3A3A',
@@ -132,17 +149,25 @@ export function YearGame({ movie, state, update }: Props) {
         <p style={{
           textAlign: 'center',
           fontFamily: "'Bebas Neue', sans-serif",
-          fontSize: '1.2rem',
+          fontSize: isMobile ? '1rem' : '1.2rem',
           color: 'var(--gold)',
           letterSpacing: '0.1em',
-          marginBottom: 12,
+          marginBottom: 8,
         }}>
           {hint}
         </p>
       )}
 
       {!gs.completed ? (
-        <div style={{ display: 'flex', gap: 8, justifyContent: 'center', maxWidth: 300, margin: '0 auto' }}>
+        <div style={{
+          display: 'flex',
+          gap: 8,
+          justifyContent: 'center',
+          maxWidth: 300,
+          margin: '0 auto',
+          flexShrink: 0,
+          paddingBottom: isMobile ? 8 : 16,
+        }}>
           <input
             type="number"
             value={inputYear}
@@ -151,10 +176,11 @@ export function YearGame({ movie, state, update }: Props) {
             placeholder="e.g. 1994"
             min={1900}
             max={2030}
+            inputMode="numeric"
             style={{
               flex: 1,
               padding: '12px 16px',
-              fontSize: '1.2rem',
+              fontSize: '1.1rem',
               fontFamily: "'Bebas Neue', sans-serif",
               letterSpacing: '0.1em',
               background: 'rgba(28,23,20,0.9)',
@@ -162,6 +188,10 @@ export function YearGame({ movie, state, update }: Props) {
               color: 'var(--cream)',
               outline: 'none',
               textAlign: 'center',
+              boxSizing: 'border-box',
+              borderRadius: 0,
+              WebkitAppearance: 'none',
+              minHeight: 44,
             }}
           />
           <button
@@ -175,6 +205,9 @@ export function YearGame({ movie, state, update }: Props) {
               border: '1px solid var(--gold-dark)',
               color: 'var(--gold)',
               transition: 'all 0.2s',
+              minHeight: 44,
+              minWidth: 44,
+              cursor: 'pointer',
             }}
             onMouseEnter={e => {
               e.currentTarget.style.background = 'var(--burgundy-dark)';
@@ -194,8 +227,8 @@ export function YearGame({ movie, state, update }: Props) {
           animate={{ opacity: 1, scale: 1 }}
           style={{
             textAlign: 'center',
-            padding: '24px',
-            margin: '16px 0',
+            padding: isMobile ? '12px' : '24px',
+            margin: isMobile ? '8px 0' : '16px 0',
             background: gs.won
               ? 'linear-gradient(135deg, rgba(74,139,92,0.1), rgba(28,23,20,0.9))'
               : 'linear-gradient(135deg, rgba(139,58,58,0.1), rgba(28,23,20,0.9))',
@@ -204,7 +237,7 @@ export function YearGame({ movie, state, update }: Props) {
         >
           <p style={{
             fontFamily: "'Bebas Neue', sans-serif",
-            fontSize: '1.3rem',
+            fontSize: isMobile ? '1rem' : '1.3rem',
             letterSpacing: '0.1em',
             color: gs.won ? '#4A8B5C' : '#8B3A3A',
           }}>
@@ -212,18 +245,18 @@ export function YearGame({ movie, state, update }: Props) {
           </p>
           <p style={{
             fontFamily: "'Bebas Neue', sans-serif",
-            fontSize: '3rem',
+            fontSize: isMobile ? '2rem' : '3rem',
             color: 'var(--gold-light)',
-            margin: '8px 0',
+            margin: '4px 0',
           }}>
             {movie.year}
           </p>
           {gs.won && (
             <p style={{
               fontFamily: "'Bebas Neue', sans-serif",
-              fontSize: '2rem',
+              fontSize: isMobile ? '1.4rem' : '2rem',
               color: 'var(--gold)',
-              marginTop: 8,
+              marginTop: 4,
             }}>
               +{gs.score} PTS
             </p>

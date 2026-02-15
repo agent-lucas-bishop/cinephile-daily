@@ -84,3 +84,20 @@ button {
 input {
   font-family: inherit;
 }
+
+/* Prevent iOS zoom on input focus */
+@media (max-width: 600px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+  
+  /* Use dynamic viewport height */
+  body, #root {
+    min-height: 100dvh;
+  }
+}
+
+/* Disable pull-to-refresh on game pages */
+html {
+  overscroll-behavior: none;
+}

@@ -1,15 +1,26 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArtDecoLine } from './ArtDecoLine';
+import { useIsMobile } from '../hooks/useMediaQuery';
 
 export function Header() {
   const navigate = useNavigate();
   const location = useLocation();
   const isHome = location.pathname === '/';
+  const isMobile = useIsMobile();
+
+  const titleSize = isHome
+    ? (isMobile ? '2.2rem' : '3.5rem')
+    : (isMobile ? '1.5rem' : '2rem');
+
+  const subtitleSize = isHome
+    ? (isMobile ? '0.85rem' : '1.1rem')
+    : (isMobile ? '0.65rem' : '0.8rem');
 
   return (
     <header style={{
       textAlign: 'center',
-      padding: '24px 20px 16px',
+      padding: isMobile ? '12px 8px 8px' : '24px 20px 16px',
+      flexShrink: 0,
     }}>
       <div
         onClick={() => navigate('/')}
@@ -17,7 +28,7 @@ export function Header() {
       >
         <h1 style={{
           fontFamily: "'Bebas Neue', sans-serif",
-          fontSize: isHome ? '3.5rem' : '2rem',
+          fontSize: titleSize,
           letterSpacing: '0.15em',
           color: 'var(--gold)',
           lineHeight: 1,
@@ -29,7 +40,7 @@ export function Header() {
         </h1>
         <p style={{
           fontFamily: "'Playfair Display', Georgia, serif",
-          fontSize: isHome ? '1.1rem' : '0.8rem',
+          fontSize: subtitleSize,
           fontStyle: 'italic',
           color: 'var(--text-muted)',
           letterSpacing: '0.3em',
@@ -39,7 +50,7 @@ export function Header() {
           DAILY
         </p>
       </div>
-      <div style={{ marginTop: 12 }}>
+      <div style={{ marginTop: isMobile ? 6 : 12 }}>
         <ArtDecoLine />
       </div>
     </header>

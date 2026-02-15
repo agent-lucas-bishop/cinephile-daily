@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useIsMobile } from '../hooks/useMediaQuery';
 
 interface Props {
   title: string;
@@ -13,6 +14,7 @@ interface Props {
 
 export function GameCard({ title, subtitle, icon, path, score, completed, index }: Props) {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   return (
     <motion.div
@@ -22,7 +24,8 @@ export function GameCard({ title, subtitle, icon, path, score, completed, index 
       onClick={() => navigate(path)}
       style={{
         position: 'relative',
-        padding: '24px',
+        padding: isMobile ? '14px 16px' : '24px',
+        minHeight: 44, // touch target
         background: completed
           ? 'linear-gradient(135deg, rgba(74,139,92,0.15), rgba(28,23,20,0.9))'
           : 'linear-gradient(135deg, rgba(212,168,67,0.06), rgba(28,23,20,0.9))',
@@ -34,18 +37,22 @@ export function GameCard({ title, subtitle, icon, path, score, completed, index 
       whileHover={{ scale: 1.02, borderColor: 'var(--gold)' }}
       whileTap={{ scale: 0.98 }}
     >
-      {/* Corner accents */}
-      <div style={{ position: 'absolute', top: 0, left: 0, width: 20, height: 20, borderTop: '2px solid var(--gold)', borderLeft: '2px solid var(--gold)' }} />
-      <div style={{ position: 'absolute', top: 0, right: 0, width: 20, height: 20, borderTop: '2px solid var(--gold)', borderRight: '2px solid var(--gold)' }} />
-      <div style={{ position: 'absolute', bottom: 0, left: 0, width: 20, height: 20, borderBottom: '2px solid var(--gold)', borderLeft: '2px solid var(--gold)' }} />
-      <div style={{ position: 'absolute', bottom: 0, right: 0, width: 20, height: 20, borderBottom: '2px solid var(--gold)', borderRight: '2px solid var(--gold)' }} />
+      {/* Corner accents - smaller on mobile */}
+      {!isMobile && (
+        <>
+          <div style={{ position: 'absolute', top: 0, left: 0, width: 20, height: 20, borderTop: '2px solid var(--gold)', borderLeft: '2px solid var(--gold)' }} />
+          <div style={{ position: 'absolute', top: 0, right: 0, width: 20, height: 20, borderTop: '2px solid var(--gold)', borderRight: '2px solid var(--gold)' }} />
+          <div style={{ position: 'absolute', bottom: 0, left: 0, width: 20, height: 20, borderBottom: '2px solid var(--gold)', borderLeft: '2px solid var(--gold)' }} />
+          <div style={{ position: 'absolute', bottom: 0, right: 0, width: 20, height: 20, borderBottom: '2px solid var(--gold)', borderRight: '2px solid var(--gold)' }} />
+        </>
+      )}
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <span style={{ fontSize: '2rem' }}>{icon}</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 10 : 16 }}>
+        <span style={{ fontSize: isMobile ? '1.5rem' : '2rem' }}>{icon}</span>
         <div style={{ flex: 1 }}>
           <h3 style={{
             fontFamily: "'Bebas Neue', sans-serif",
-            fontSize: '1.4rem',
+            fontSize: isMobile ? '1.1rem' : '1.4rem',
             letterSpacing: '0.1em',
             color: 'var(--gold-light)',
             margin: 0,
@@ -54,7 +61,7 @@ export function GameCard({ title, subtitle, icon, path, score, completed, index 
           </h3>
           <p style={{
             fontFamily: "'Cormorant Garamond', Georgia, serif",
-            fontSize: '0.95rem',
+            fontSize: isMobile ? '0.8rem' : '0.95rem',
             color: 'var(--text-muted)',
             margin: '2px 0 0',
             fontStyle: 'italic',
@@ -65,7 +72,7 @@ export function GameCard({ title, subtitle, icon, path, score, completed, index 
         {completed && (
           <div style={{
             fontFamily: "'Bebas Neue', sans-serif",
-            fontSize: '1.5rem',
+            fontSize: isMobile ? '1.2rem' : '1.5rem',
             color: 'var(--gold)',
           }}>
             {score}/5
@@ -74,7 +81,7 @@ export function GameCard({ title, subtitle, icon, path, score, completed, index 
         {!completed && (
           <div style={{
             fontFamily: "'Bebas Neue', sans-serif",
-            fontSize: '1rem',
+            fontSize: isMobile ? '0.85rem' : '1rem',
             color: 'var(--text-dim)',
             letterSpacing: '0.1em',
           }}>

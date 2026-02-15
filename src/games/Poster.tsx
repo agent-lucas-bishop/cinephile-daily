@@ -4,6 +4,7 @@ import { RoundIndicator } from '../components/RoundIndicator';
 import { BlurryPoster } from '../components/BlurryPoster';
 import { getScore } from '../utils/scoring';
 import { updateStatsAfterGame } from '../utils/storage';
+import { useIsMobile } from '../hooks/useMediaQuery';
 import type { Movie } from '../data/movies';
 import type { DailyState } from '../utils/storage';
 
@@ -19,6 +20,7 @@ export function PosterGame({ movie, state, update }: Props) {
   const gs = state.games.poster;
   const round = gs.round;
   const blur = BLUR_LEVELS[Math.min(round - 1, 4)];
+  const isMobile = useIsMobile();
 
   const handleGuess = (title: string) => {
     const correct = title.toLowerCase() === movie.title.toLowerCase();
@@ -42,14 +44,22 @@ export function PosterGame({ movie, state, update }: Props) {
   };
 
   return (
-    <div style={{ padding: '0 20px', maxWidth: 500, margin: '0 auto' }}>
+    <div style={{
+      padding: isMobile ? '0 4px' : '0 20px',
+      maxWidth: 500,
+      margin: '0 auto',
+      width: '100%',
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+    }}>
       <h2 style={{
         fontFamily: "'Bebas Neue', sans-serif",
-        fontSize: '1.8rem',
+        fontSize: isMobile ? '1.3rem' : '1.8rem',
         letterSpacing: '0.1em',
         color: 'var(--gold)',
         textAlign: 'center',
-        margin: '16px 0 8px',
+        margin: isMobile ? '8px 0 4px' : '16px 0 8px',
       }}>
         THE POSTER
       </h2>
@@ -57,30 +67,37 @@ export function PosterGame({ movie, state, update }: Props) {
         textAlign: 'center',
         color: 'var(--text-muted)',
         fontStyle: 'italic',
-        fontSize: '0.95rem',
-        marginBottom: 16,
+        fontSize: isMobile ? '0.8rem' : '0.95rem',
+        marginBottom: isMobile ? 8 : 16,
       }}>
         Name the film from its poster
       </p>
 
       <RoundIndicator current={round} won={gs.won} />
 
-      <div style={{ margin: '20px 0' }}>
+      <div style={{
+        margin: isMobile ? '8px 0' : '20px 0',
+        flex: gs.completed ? undefined : 1,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: 0,
+      }}>
         <BlurryPoster
           url={movie.posterUrl}
           blur={gs.completed ? 0 : blur}
-          maxWidth={300}
+          maxWidth={isMobile ? 200 : 300}
         />
       </div>
 
       {gs.guesses.length > 0 && (
-        <div style={{ marginBottom: 12, textAlign: 'center' }}>
+        <div style={{ marginBottom: 8, textAlign: 'center' }}>
           {gs.guesses.map((g, i) => (
             <span key={i} style={{
               display: 'inline-block',
-              padding: '2px 10px',
+              padding: '2px 8px',
               margin: 2,
-              fontSize: '0.85rem',
+              fontSize: isMobile ? '0.75rem' : '0.85rem',
               color: g.toLowerCase() === movie.title.toLowerCase() ? '#4A8B5C' : '#8B3A3A',
               border: `1px solid ${g.toLowerCase() === movie.title.toLowerCase() ? 'rgba(74,139,92,0.4)' : 'rgba(139,58,58,0.3)'}`,
               fontFamily: "'Cormorant Garamond', serif",
@@ -93,50 +110,58 @@ export function PosterGame({ movie, state, update }: Props) {
       )}
 
       {!gs.completed ? (
-        <MovieSearch onSelect={handleGuess} placeholder={`Guess ${round} of 5...`} />
+        <div style={{ flexShrink: 0, paddingBottom: isMobile ? 8 : 16 }}>
+          <MovieSearch onSelect={handleGuess} placeholder={`Guess ${round} of 5...`} />
+        </div>
       ) : (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          style={{
-            textAlign: 'center',
-            padding: '24px',
-            margin: '16px 0',
-            background: gs.won
-              ? 'linear-gradient(135deg, rgba(74,139,92,0.1), rgba(28,23,20,0.9))'
-              : 'linear-gradient(135deg, rgba(139,58,58,0.1), rgba(28,23,20,0.9))',
-            border: `1px solid ${gs.won ? 'rgba(74,139,92,0.4)' : 'rgba(139,58,58,0.3)'}`,
-          }}
-        >
-          <p style={{
-            fontFamily: "'Bebas Neue', sans-serif",
-            fontSize: '1.3rem',
-            letterSpacing: '0.1em',
-            color: gs.won ? '#4A8B5C' : '#8B3A3A',
-          }}>
-            {gs.won ? 'CORRECT!' : 'THE ANSWER WAS...'}
-          </p>
-          <p style={{
-            fontFamily: "'Playfair Display', Georgia, serif",
-            fontSize: '1.5rem',
-            color: 'var(--gold-light)',
-            margin: '8px 0',
-            fontWeight: 700,
-          }}>
-            {movie.title}
-          </p>
-          {gs.won && (
-            <p style={{
-              fontFamily: "'Bebas Neue', sans-serif",
-              fontSize: '2rem',
-              color: 'var(--gold)',
-              marginTop: 12,
-            }}>
-              +{gs.score} PTS
-            </p>
-          )}
-        </motion.div>
+        <CompactResult won={gs.won} score={gs.score} title={movie.title} isMobile={isMobile} />
       )}
     </div>
+  );
+}
+
+function CompactResult({ won, score, title, isMobile }: { won: boolean; score: number; title: string; isMobile: boolean }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      style={{
+        textAlign: 'center',
+        padding: isMobile ? '12px' : '24px',
+        margin: isMobile ? '8px 0' : '16px 0',
+        background: won
+          ? 'linear-gradient(135deg, rgba(74,139,92,0.1), rgba(28,23,20,0.9))'
+          : 'linear-gradient(135deg, rgba(139,58,58,0.1), rgba(28,23,20,0.9))',
+        border: `1px solid ${won ? 'rgba(74,139,92,0.4)' : 'rgba(139,58,58,0.3)'}`,
+      }}
+    >
+      <p style={{
+        fontFamily: "'Bebas Neue', sans-serif",
+        fontSize: isMobile ? '1rem' : '1.3rem',
+        letterSpacing: '0.1em',
+        color: won ? '#4A8B5C' : '#8B3A3A',
+      }}>
+        {won ? 'CORRECT!' : 'THE ANSWER WAS...'}
+      </p>
+      <p style={{
+        fontFamily: "'Playfair Display', Georgia, serif",
+        fontSize: isMobile ? '1.1rem' : '1.5rem',
+        color: 'var(--gold-light)',
+        margin: '4px 0',
+        fontWeight: 700,
+      }}>
+        {title}
+      </p>
+      {won && (
+        <p style={{
+          fontFamily: "'Bebas Neue', sans-serif",
+          fontSize: isMobile ? '1.4rem' : '2rem',
+          color: 'var(--gold)',
+          marginTop: 4,
+        }}>
+          +{score} PTS
+        </p>
+      )}
+    </motion.div>
   );
 }
