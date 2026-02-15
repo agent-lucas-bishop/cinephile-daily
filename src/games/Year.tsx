@@ -58,7 +58,7 @@ export function YearGame({ movie, state, update }: Props) {
     }}>
       {/* Back link */}
       <div style={{
-        padding: '8px 0',
+        padding: '16px 0 8px',
         fontFamily: "'Bebas Neue', sans-serif",
         fontSize: '0.75rem',
         letterSpacing: '0.2em',

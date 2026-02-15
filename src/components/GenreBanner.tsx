@@ -15,7 +15,7 @@ export function GenreBanner({ genre }: Props) {
       transition={{ duration: 0.5, ease: 'easeOut' }}
       style={{
         textAlign: 'center',
-        margin: isMobile ? '16px 0 0' : '20px 0 0',
+        margin: isMobile ? '12px 0 16px' : '16px 0 20px',
         position: 'relative',
       }}
     >

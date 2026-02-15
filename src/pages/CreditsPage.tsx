@@ -15,7 +15,7 @@ export function CreditsPage() {
         maxWidth: 500,
         margin: '0 auto',
         width: '100%',
-        padding: '8px 4px 0',
+        padding: '16px 4px 0',
       }}>
         <div style={{
           fontFamily: "'Bebas Neue', sans-serif",

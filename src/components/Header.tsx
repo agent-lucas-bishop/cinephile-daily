@@ -12,7 +12,7 @@ export function Header() {
   return (
     <header style={{
       textAlign: 'center',
-      padding: isMobile ? '16px 8px 8px' : '32px 20px 16px',
+      padding: isMobile ? '24px 8px 8px' : '40px 20px 16px',
       flexShrink: 0,
     }}>
       <div
