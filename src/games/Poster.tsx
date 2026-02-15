@@ -14,6 +14,20 @@ interface Props {
 
 const BLUR_LEVELS = [50, 35, 20, 10, 3];
 
+// Progressive clues revealed alongside the unblurring
+function getClues(movie: Movie, round: number): string[] {
+  const clues: string[] = [];
+  // Round 2+: genre
+  if (round >= 2) clues.push(`Genre: ${movie.genre}`);
+  // Round 3+: tagline (if available)
+  if (round >= 3 && movie.tagline) clues.push(`"${movie.tagline}"`);
+  // Round 4+: release year
+  if (round >= 4) clues.push(`Released: ${movie.year}`);
+  // Round 5: director
+  if (round >= 5) clues.push(`Director: ${movie.director}`);
+  return clues;
+}
+
 export function PosterGame({ movie, state, update }: Props) {
   const gs = state.games.poster;
   const round = gs.round;
@@ -97,26 +111,6 @@ export function PosterGame({ movie, state, update }: Props) {
           zIndex: 2,
         }} />
 
-        {/* Status dots */}
-        <div style={{
-          position: 'absolute',
-          top: 8,
-          left: 8,
-          zIndex: 3,
-          display: 'flex',
-          gap: 4,
-        }}>
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} style={{
-              width: 6,
-              height: 6,
-              borderRadius: '50%',
-              background: i < round ? '#8B0000' : 'rgba(255,80,80,0.4)',
-              transition: 'background 0.3s',
-            }} />
-          ))}
-        </div>
-
         <div style={{
           overflow: 'hidden',
           border: '3px solid #333',
@@ -190,8 +184,48 @@ export function PosterGame({ movie, state, update }: Props) {
             IDENTIFY FILM FROM RECOVERED ASSETS
           </p>
 
+          {/* Status dots */}
+          {!gs.completed && (
+            <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  background: i < round ? '#8B3A3A' : '#d4cfc4',
+                  transition: 'background 0.3s',
+                }} />
+              ))}
+            </div>
+          )}
+
           {/* Gold divider */}
           <div style={{ height: 2, background: '#8B6914', marginBottom: 16 }} />
+
+          {/* Progressive clues */}
+          {!gs.completed && round > 1 && (
+            <div style={{ marginBottom: 14 }}>
+              {getClues(movie, round).map((clue, i) => (
+                <motion.p
+                  key={i}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: '0.85rem',
+                    color: '#555',
+                    fontStyle: clue.startsWith('"') ? 'italic' : 'normal',
+                    margin: '4px 0',
+                    padding: '2px 0',
+                    borderBottom: '1px solid rgba(0,0,0,0.06)',
+                  }}
+                >
+                  {clue}
+                </motion.p>
+              ))}
+            </div>
+          )}
 
           {/* Wrong guesses */}
           {gs.guesses.length > 0 && (

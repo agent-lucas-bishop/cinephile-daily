@@ -90,9 +90,8 @@ export function YearGame({ movie, state, update }: Props) {
             style={{
               width: '100%',
               display: 'block',
-              filter: gs.completed ? 'blur(0px)' : `blur(${40 - gs.round * 6}px)`,
+              filter: 'none',
               transition: 'filter 0.6s ease',
-              transform: 'scale(1.1)',
             }}
           />
         </div>
@@ -174,20 +173,67 @@ export function YearGame({ movie, state, update }: Props) {
 
           {/* Previous guesses */}
           {gs.yearGuesses.length > 0 && !gs.completed && (
-            <div style={{ marginBottom: 12 }}>
-              {gs.yearGuesses.map((y, i) => (
-                <span key={i} style={{
-                  display: 'inline-block',
-                  padding: '3px 10px',
-                  margin: 2,
-                  fontSize: '0.9rem',
-                  fontFamily: "'Bebas Neue', sans-serif",
-                  letterSpacing: '0.05em',
-                  color: y === movie.year ? '#4A8B5C' : '#8B3A3A',
-                }}>
-                  {y} {y < movie.year ? '↑' : y > movie.year ? '↓' : '✓'}
-                </span>
-              ))}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 14, alignItems: 'center' }}>
+              {gs.yearGuesses.map((y, i) => {
+                const isCorrect = y === movie.year;
+                const isHigher = y < movie.year;
+                return (
+                  <div key={i} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                  }}>
+                    <span style={{
+                      fontFamily: "'Bebas Neue', sans-serif",
+                      fontSize: '1.1rem',
+                      letterSpacing: '0.1em',
+                      color: isCorrect ? '#4A8B5C' : '#1a1a1a',
+                      minWidth: 50,
+                      textAlign: 'right',
+                    }}>
+                      {y}
+                    </span>
+                    {!isCorrect && (
+                      <div style={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: '50%',
+                        background: isHigher ? '#C5A059' : '#8B3A3A',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                        <svg width="14" height="14" viewBox="0 0 14 14" style={{
+                          transform: isHigher ? 'rotate(-45deg)' : 'rotate(135deg)',
+                        }}>
+                          <path
+                            d="M2 7 L7 2 L12 7 M7 2 L7 12"
+                            fill="none"
+                            stroke="#fff"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
+                    )}
+                    {isCorrect && (
+                      <div style={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: '50%',
+                        background: '#4A8B5C',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#fff',
+                        fontSize: '0.9rem',
+                        fontWeight: 700,
+                      }}>✓</div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
 
