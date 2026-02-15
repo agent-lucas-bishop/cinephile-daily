@@ -14,16 +14,33 @@ interface Props {
 
 const AMAZON_ASSOCIATE_TAG = 'codyp0c-20';
 
-function getProviderLink(providerName: string, movieTitle: string): string {
+// Major providers we show — must have real links, no fake redirects
+const MAJOR_PROVIDERS = new Set([
+  'Amazon Prime Video',
+  'Amazon Video',
+  'Apple TV',
+  'Apple TV Plus',
+  'YouTube',
+  'YouTube Premium',
+  'Google Play Movies',
+]);
+
+function getProviderLink(providerName: string, movieTitle: string): string | null {
   const encoded = encodeURIComponent(movieTitle);
   const links: Record<string, string> = {
     'Amazon Prime Video': `https://www.amazon.com/s?k=${encoded}&i=instant-video&tag=${AMAZON_ASSOCIATE_TAG}`,
     'Amazon Video': `https://www.amazon.com/s?k=${encoded}&i=instant-video&tag=${AMAZON_ASSOCIATE_TAG}`,
     'Apple TV': `https://tv.apple.com/search?term=${encoded}`,
     'Apple TV Plus': `https://tv.apple.com/search?term=${encoded}`,
-    'default': `https://www.amazon.com/s?k=${encoded}&i=instant-video&tag=${AMAZON_ASSOCIATE_TAG}`,
+    'YouTube': `https://www.youtube.com/results?search_query=${encoded}+full+movie`,
+    'YouTube Premium': `https://www.youtube.com/results?search_query=${encoded}+full+movie`,
+    'Google Play Movies': `https://play.google.com/store/search?q=${encoded}&c=movies`,
   };
-  return links[providerName] || links['default'];
+  return links[providerName] || null;
+}
+
+function isAmazon(name: string): boolean {
+  return name === 'Amazon Prime Video' || name === 'Amazon Video';
 }
 
 const TYPE_LABELS: Record<string, string> = {
@@ -72,7 +89,8 @@ export function NowStreaming({ providers, completed, won, movieTitle, rating, ta
     buy: providers.filter(p => p.type === 'buy'),
   };
 
-  const hasProviders = providers.length > 0;
+  const majorProviders = providers.filter(p => MAJOR_PROVIDERS.has(p.name));
+  const hasProviders = majorProviders.length > 0;
 
   return (
     <motion.div
@@ -151,7 +169,7 @@ export function NowStreaming({ providers, completed, won, movieTitle, rating, ta
         {hasProviders ? (
           <>
             {(['stream', 'rent', 'buy'] as const).map(type => {
-              const group = grouped[type];
+              const group = grouped[type].filter(p => MAJOR_PROVIDERS.has(p.name));
               if (group.length === 0) return null;
               return (
                 <div key={type} style={{ marginBottom: 12 }}>
@@ -169,56 +187,73 @@ export function NowStreaming({ providers, completed, won, movieTitle, rating, ta
                     flexWrap: 'wrap',
                     gap: 8,
                     justifyContent: 'center',
+                    alignItems: 'center',
                   }}>
-                    {group.map(p => (
-                      <a
-                        key={p.id}
-                        href={getProviderLink(p.name, movieTitle)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title={p.name}
-                        style={{ textDecoration: 'none' }}
-                      >
-                        <div style={{
-                          width: isMobile ? 36 : 40,
-                          height: isMobile ? 36 : 40,
-                          borderRadius: '50%',
-                          background: '#fff',
-                          border: '1px solid #e0d8c8',
-                          boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-                          overflow: 'hidden',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}>
-                          <img
-                            src={p.logoUrl}
-                            alt={p.name}
-                            style={{
-                              width: '80%',
-                              height: '80%',
-                              objectFit: 'contain',
-                              borderRadius: '50%',
-                            }}
-                          />
-                        </div>
-                      </a>
-                    ))}
+                    {group.map(p => {
+                      const link = getProviderLink(p.name, movieTitle);
+                      if (!link) return null;
+                      const amazon = isAmazon(p.name);
+                      const size = amazon
+                        ? (isMobile ? 46 : 52)
+                        : (isMobile ? 36 : 40);
+                      return (
+                        <a
+                          key={p.id}
+                          href={link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title={p.name}
+                          style={{ textDecoration: 'none' }}
+                        >
+                          <div style={{
+                            width: size,
+                            height: size,
+                            borderRadius: '50%',
+                            background: '#fff',
+                            border: amazon ? '2px solid #C5A059' : '1px solid #e0d8c8',
+                            boxShadow: amazon
+                              ? '0 2px 8px rgba(197,160,89,0.3)'
+                              : '0 2px 6px rgba(0,0,0,0.1)',
+                            overflow: 'hidden',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}>
+                            <img
+                              src={p.logoUrl}
+                              alt={p.name}
+                              style={{
+                                width: '80%',
+                                height: '80%',
+                                objectFit: 'contain',
+                                borderRadius: '50%',
+                              }}
+                            />
+                          </div>
+                        </a>
+                      );
+                    })}
                   </div>
                 </div>
               );
             })}
           </>
         ) : (
-          <p style={{
-            fontFamily: "'Cormorant Garamond', serif",
-            fontSize: '0.85rem',
-            color: '#999',
-            fontStyle: 'italic',
-            margin: '8px 0',
-          }}>
-            Streaming info unavailable
-          </p>
+          <a
+            href={`https://www.amazon.com/s?k=${encodeURIComponent(movieTitle)}&i=instant-video&tag=${AMAZON_ASSOCIATE_TAG}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: '0.85rem',
+              color: '#C5A059',
+              fontStyle: 'italic',
+              margin: '8px 0',
+              display: 'inline-block',
+            }}
+          >
+            Search on Prime Video →
+          </a>
         )}
 
         <p style={{
