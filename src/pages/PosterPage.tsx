@@ -17,15 +17,24 @@ export function PosterPage() {
         width: '100%',
         padding: '16px 4px 0',
       }}>
-        <div style={{
-          fontFamily: "'Bebas Neue', sans-serif",
-          fontSize: '0.75rem',
-          letterSpacing: '0.2em',
-          color: 'var(--text-muted)',
-          cursor: 'pointer',
-        }} onClick={() => window.history.back()}>
+        <button
+          onClick={() => window.history.back()}
+          style={{
+            fontFamily: "'Bebas Neue', sans-serif",
+            fontSize: '0.75rem',
+            letterSpacing: '0.2em',
+            color: 'var(--cream)',
+            background: 'rgba(255,255,255,0.08)',
+            border: '1px solid rgba(255,255,255,0.15)',
+            padding: '8px 16px',
+            cursor: 'pointer',
+            transition: 'background 0.2s',
+          }}
+          onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.15)')}
+          onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
+        >
           ← RETURN TO DOSSIER
-        </div>
+        </button>
       </div>
       {genre && <GenreBanner genre={genre} />}
       <PosterGame movie={movies[1]} state={state} update={update} />
