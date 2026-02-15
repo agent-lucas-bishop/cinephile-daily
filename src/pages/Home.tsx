@@ -104,9 +104,8 @@ export function Home() {
         })}
       </div>
 
-      {/* Share screen when all done */}
-      {allDone && (
-        <motion.div
+      {/* Results / Share section — always shown */}
+      <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.6 }}
@@ -237,7 +236,7 @@ export function Home() {
               </div>
 
               {/* Share buttons */}
-              <ShareCard state={state} streaks={streaks} />
+              <ShareCard state={state} streaks={streaks} allDone={allDone} />
 
               <p style={{
                 fontFamily: "'Cormorant Garamond', serif",
@@ -254,7 +253,6 @@ export function Home() {
             </div>
           </div>
         </motion.div>
-      )}
 
       {/* Today's genre badge */}
       {genre && (
@@ -395,7 +393,7 @@ function PaperGameCard({ title, icon, path, score, completed, won, streak, index
         {/* Score badge */}
         {completed && (
           <div style={{
-            fontFamily: "'Playfair Display', serif",
+            fontFamily: "'Bebas Neue', sans-serif",
             fontSize: '1.4rem',
             fontWeight: 900,
             color: won ? '#4A8B5C' : '#999',

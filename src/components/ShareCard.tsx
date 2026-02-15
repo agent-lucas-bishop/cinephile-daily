@@ -1,11 +1,15 @@
 import { useRef, useState, useCallback } from 'react';
 import { toPng } from 'html-to-image';
+import { useIsMobile } from '../hooks/useMediaQuery';
 import type { DailyState, GameStreakStats } from '../utils/storage';
 
 interface ShareCardProps {
   state: DailyState;
   streaks: Record<'credits' | 'poster' | 'year', GameStreakStats>;
+  allDone: boolean;
 }
+
+const SITE_URL = 'https://cinephile.codyp.xyz';
 
 const GAMES = [
   { key: 'credits' as const, title: 'THE CREDITS', emoji: '🎭' },
@@ -39,15 +43,16 @@ function shareText(gs: DailyState['games'], streaks: ShareCardProps['streaks']):
     '',
     `Total: ${total}/15`,
     '',
-    'https://cinephile-daily.vercel.app',
+    SITE_URL,
   ];
   return lines.join('\n');
 }
 
-export function ShareCard({ state, streaks }: ShareCardProps) {
+export function ShareCard({ state, streaks, allDone }: ShareCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [generating, setGenerating] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const isMobile = useIsMobile();
   const gs = state.games;
   const totalScore = gs.credits.score + gs.poster.score + gs.year.score;
 
@@ -69,7 +74,7 @@ export function ShareCard({ state, streaks }: ShareCardProps) {
     }
   }, []);
 
-  const handleShare = useCallback(async () => {
+  const handleNativeShare = useCallback(async () => {
     const blob = await generateImage();
     if (blob && navigator.share) {
       try {
@@ -80,10 +85,9 @@ export function ShareCard({ state, streaks }: ShareCardProps) {
         });
         return;
       } catch {
-        // User cancelled or not supported — fall through to download
+        // User cancelled
       }
     }
-    // Fallback: download
     if (blob) downloadBlob(blob);
   }, [gs, streaks, generateImage]);
 
@@ -97,8 +101,24 @@ export function ShareCard({ state, streaks }: ShareCardProps) {
     window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
   }, [gs, streaks]);
 
+  const handleFacebook = useCallback(() => {
+    const url = encodeURIComponent(SITE_URL);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+  }, []);
+
+  const handleReddit = useCallback(() => {
+    const title = encodeURIComponent(`🎬 Cinéphile Daily — ${totalScore}/15`);
+    const url = encodeURIComponent(SITE_URL);
+    window.open(`https://www.reddit.com/submit?url=${url}&title=${title}`, '_blank');
+  }, [totalScore]);
+
+  const handleThreads = useCallback(() => {
+    const text = encodeURIComponent(shareText(gs, streaks));
+    window.open(`https://www.threads.net/intent/post?text=${text}`, '_blank');
+  }, [gs, streaks]);
+
   const handleCopyLink = useCallback(() => {
-    navigator.clipboard.writeText('https://cinephile-daily.vercel.app').then(() => {
+    navigator.clipboard.writeText(SITE_URL).then(() => {
       setCopiedLink(true);
       setTimeout(() => setCopiedLink(false), 2000);
     });
@@ -243,28 +263,60 @@ export function ShareCard({ state, streaks }: ShareCardProps) {
             letterSpacing: 3,
             color: '#666',
           }}>
-            cinephile-daily.vercel.app
+            cinephile.codyp.xyz
           </div>
         </div>
       </div>
 
-      {/* Share buttons */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: 10,
-        marginTop: 16,
-      }}>
-        <ShareButton
-          onClick={handleShare}
-          icon="↗"
-          label={generating ? 'GENERATING...' : 'SHARE'}
-          primary
-        />
-        <ShareButton onClick={handleTwitter} icon="𝕏" label="POST ON X" />
-        <ShareButton onClick={handleCopyLink} icon="🔗" label={copiedLink ? 'COPIED!' : 'COPY LINK'} />
-        <ShareButton onClick={handleDownload} icon="⬇" label="DOWNLOAD" />
-      </div>
+      {/* Share buttons or incomplete message */}
+      {allDone ? (
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: 10,
+          marginTop: 16,
+        }}>
+          {/* Mobile: native share. Desktop: platform buttons */}
+          {isMobile ? (
+            <ShareButton
+              onClick={handleNativeShare}
+              icon="↗"
+              label={generating ? 'GENERATING...' : 'SHARE'}
+              primary
+            />
+          ) : (
+            <>
+              <ShareButton onClick={handleTwitter} icon="𝕏" label="POST ON X" primary />
+              <ShareButton onClick={handleFacebook} icon="f" label="FACEBOOK" />
+              <ShareButton onClick={handleReddit} icon="⬆" label="REDDIT" />
+              <ShareButton onClick={handleThreads} icon="@" label="THREADS" />
+            </>
+          )}
+          <ShareButton onClick={handleCopyLink} icon="🔗" label={copiedLink ? 'COPIED!' : 'COPY LINK'} />
+          <ShareButton
+            onClick={handleDownload}
+            icon="⬇"
+            label="DOWNLOAD IMAGE"
+          />
+        </div>
+      ) : (
+        <div style={{
+          marginTop: 16,
+          padding: '16px 12px',
+          border: '1px solid #d0ccc4',
+          textAlign: 'center',
+        }}>
+          <p style={{
+            fontFamily: "'Bebas Neue', sans-serif",
+            fontSize: '0.85rem',
+            letterSpacing: '0.15em',
+            color: '#888',
+            margin: 0,
+          }}>
+            COMPLETE ALL THREE CASES TO SHARE YOUR RESULTS
+          </p>
+        </div>
+      )}
     </div>
   );
 }
