@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { MOVIE_POOLS } from './movie-pools';
+import { MOVIE_POOLS } from '../lib/movie-pools';
 
 const TMDB_KEY = process.env.TMDB_API_KEY!;
 const TMDB = 'https://api.themoviedb.org/3';
