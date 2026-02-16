@@ -14,9 +14,6 @@ const GENRES: Record<number, string> = {
 
 const DAILY_GENRE_IDS = [28, 12, 16, 35, 80, 18, 10751, 14, 36, 27, 10402, 9648, 10749, 878, 53, 10752, 37];
 
-// MOVIE_POOLS is defined at the bottom of this file (inlined for Vercel serverless compat)
-const moviePools = MOVIE_POOLS;
-
 // Seeded PRNG (mulberry32)
 function mulberry32(seed: number) {
   return function () {
@@ -89,7 +86,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const genre = GENRES[genreId];
 
     // Get pool from static data
-    const pool = moviePools[String(genreId)] ?? [];
+    const pool = MOVIE_POOLS[String(genreId)] ?? [];
     if (pool.length < 3) {
       return res.status(500).json({ error: `Genre pool too small for ${genre}` });
     }
