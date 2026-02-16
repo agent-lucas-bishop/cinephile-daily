@@ -177,15 +177,27 @@ function pickDiverseMovies(pool: PoolMovie[], rng: () => number, count: number):
   return picks;
 }
 
+// In-memory cache survives across warm invocations (same Lambda instance)
+let cachedDate = '';
+let cachedResult: any = null;
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const now = new Date();
     const dateStr = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')}`;
 
-    // Cache until end of UTC day
+    // Return cached result if we already generated today's puzzle (survives warm invocations)
+    if (cachedDate === dateStr && cachedResult) {
+      const endOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59));
+      const maxAge = Math.max(60, Math.floor((endOfDay.getTime() - now.getTime()) / 1000));
+      res.setHeader('Cache-Control', `public, s-maxage=${maxAge}, stale-while-revalidate=3600`);
+      return res.status(200).json(cachedResult);
+    }
+
+    // Cache until end of UTC day + stale-while-revalidate keeps serving old content during redeploy
     const endOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59));
     const maxAge = Math.max(60, Math.floor((endOfDay.getTime() - now.getTime()) / 1000));
-    res.setHeader('Cache-Control', `public, s-maxage=${maxAge}, stale-while-revalidate=60`);
+    res.setHeader('Cache-Control', `public, s-maxage=${maxAge}, stale-while-revalidate=3600`);
 
     const seed = dateSeed(dateStr);
     const rng = mulberry32(seed);
@@ -260,7 +272,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       };
     }));
 
-    res.status(200).json({ date: dateStr, movies, genre });
+    const result = { date: dateStr, movies, genre };
+    cachedDate = dateStr;
+    cachedResult = result;
+    res.status(200).json(result);
   } catch (err) {
     console.error('daily-puzzle error:', err);
     res.status(500).json({ error: 'Failed to generate daily puzzle' });
