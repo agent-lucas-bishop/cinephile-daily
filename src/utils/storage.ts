@@ -38,6 +38,18 @@ export interface GameStreakStats {
 
 const DAILY_KEY = 'cinephile-daily-state';
 const STATS_KEY = 'cinephile-daily-stats';
+const VERSION_KEY = 'cinephile-daily-version';
+const CURRENT_VERSION = '2.0'; // Bump on breaking changes to clear stale daily state
+
+// Clear stale daily state on version mismatch (keeps streaks/stats)
+function checkVersion() {
+  const stored = localStorage.getItem(VERSION_KEY);
+  if (stored !== CURRENT_VERSION) {
+    localStorage.removeItem(DAILY_KEY); // Clear today's game state only
+    localStorage.setItem(VERSION_KEY, CURRENT_VERSION);
+  }
+}
+checkVersion();
 
 function defaultGameState(): GameState {
   return { round: 1, completed: false, score: 0, guesses: [], won: false };
