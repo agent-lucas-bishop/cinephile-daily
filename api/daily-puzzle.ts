@@ -1,7 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const poolData = require('./movie-pools.json');
+import { MOVIE_POOLS } from './movie-pools';
 
 const TMDB_KEY = process.env.TMDB_API_KEY!;
 const TMDB = 'https://api.themoviedb.org/3';
@@ -17,7 +15,7 @@ const GENRES: Record<number, string> = {
 
 const DAILY_GENRE_IDS = [28, 12, 16, 35, 80, 18, 10751, 14, 36, 27, 10402, 9648, 10749, 878, 53, 10752, 37];
 
-const moviePools: Record<string, number[]> = (poolData as any).pools;
+const moviePools = MOVIE_POOLS;
 
 // Seeded PRNG (mulberry32)
 function mulberry32(seed: number) {
