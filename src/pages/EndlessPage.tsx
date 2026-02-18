@@ -45,7 +45,7 @@ export function EndlessPage() {
     roundJustWon,
     lastRoundScore,
     advanceToNextRound,
-    bestRound,
+    bestRound: _bestRound,
     bestScore,
   } = useEndlessMode(type);
 
@@ -60,7 +60,7 @@ export function EndlessPage() {
   if (isGameOver) {
     return (
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <TopBar navigate={navigate} run={run} bestScore={bestScore} type={type} isMobile={isMobile} />
+        <TopBar navigate={navigate} run={run} bestScore={bestScore} />
         <EndlessBadge type={type} />
 
         <motion.div
@@ -208,7 +208,7 @@ export function EndlessPage() {
   if (roundJustWon) {
     return (
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <TopBar navigate={navigate} run={run} bestScore={bestScore} type={type} isMobile={isMobile} />
+        <TopBar navigate={navigate} run={run} bestScore={bestScore} />
         <EndlessBadge type={type} />
 
         <motion.div
@@ -311,7 +311,7 @@ export function EndlessPage() {
 
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-      <TopBar navigate={navigate} run={run} bestScore={bestScore} type={type} isMobile={isMobile} />
+      <TopBar navigate={navigate} run={run} bestScore={bestScore} />
       <EndlessBadge type={type} />
 
       {type === 'credits' && <CreditsGame movie={movie} state={state} update={update} endless />}
@@ -321,12 +321,10 @@ export function EndlessPage() {
   );
 }
 
-function TopBar({ navigate, run, bestScore, type, isMobile }: {
+function TopBar({ navigate, run, bestScore }: {
   navigate: (p: string) => void;
   run: EndlessRun;
   bestScore: number;
-  type: GameType;
-  isMobile: boolean;
 }) {
   return (
     <div style={{
