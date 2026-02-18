@@ -4,6 +4,7 @@ import { getScore } from '../utils/scoring';
 import { updateStatsAfterGame, updateGameStreak } from '../utils/storage';
 import { useIsMobile } from '../hooks/useMediaQuery';
 import { NowStreaming } from '../components/NowStreaming';
+import { PlayMoreButton } from '../components/PlayMoreButton';
 import type { Movie } from '../types/movie';
 import type { DailyState } from '../utils/storage';
 
@@ -11,6 +12,7 @@ interface Props {
   movie: Movie;
   state: DailyState;
   update: (fn: (s: DailyState) => DailyState) => void;
+  endless?: boolean;
 }
 
 const BLUR_LEVELS = [50, 35, 20, 10, 3];
@@ -29,7 +31,7 @@ function getClues(movie: Movie, round: number): string[] {
   return clues;
 }
 
-export function PosterGame({ movie, state, update }: Props) {
+export function PosterGame({ movie, state, update, endless }: Props) {
   const gs = state.games.poster;
   const round = gs.round;
   const blur = BLUR_LEVELS[Math.min(round - 1, 4)];
@@ -44,13 +46,12 @@ export function PosterGame({ movie, state, update }: Props) {
         g.completed = true;
         g.won = true;
         g.score = getScore(g.round);
-        updateStatsAfterGame(g.score);
-        updateGameStreak('poster', g.score, true);
+        if (!endless) { updateStatsAfterGame(g.score); updateGameStreak('poster', g.score, true); }
       } else if (g.round >= 5) {
         g.completed = true;
         g.won = false;
         g.score = 0;
-        updateGameStreak('poster', 0, false);
+        if (!endless) { updateGameStreak('poster', 0, false); }
       } else {
         g.round += 1;
       }
@@ -341,6 +342,10 @@ export function PosterGame({ movie, state, update }: Props) {
             overview={movie.overview}
               movieTitle={movie.title}
             />
+          )}
+
+          {gs.completed && !endless && (
+            <PlayMoreButton gameType="poster" />
           )}
         </div>
       </div>

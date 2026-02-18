@@ -15,6 +15,20 @@ export function Header() {
       padding: isMobile ? '24px 8px 8px' : '40px 20px 16px',
       flexShrink: 0,
     }}>
+      <a
+        href="https://codyp.xyz"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          marginBottom: 8,
+          opacity: 0.6,
+          transition: 'opacity 0.2s',
+        }}
+        onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+        onMouseLeave={e => (e.currentTarget.style.opacity = '0.6')}
+      >
+        <img src="/codyp-logo-light.png" alt="codyp.xyz" style={{ height: 20, width: 'auto' }} />
+      </a>
       <div
         onClick={() => navigate('/')}
         style={{ cursor: 'pointer' }}

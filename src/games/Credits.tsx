@@ -6,6 +6,7 @@ import { updateStatsAfterGame, updateGameStreak } from '../utils/storage';
 import { useIsMobile } from '../hooks/useMediaQuery';
 import { getHeadshotUrl } from '../types/movie';
 import { NowStreaming } from '../components/NowStreaming';
+import { PlayMoreButton } from '../components/PlayMoreButton';
 import type { Movie } from '../types/movie';
 import type { DailyState } from '../utils/storage';
 
@@ -13,13 +14,14 @@ interface Props {
   movie: Movie;
   state: DailyState;
   update: (fn: (s: DailyState) => DailyState) => void;
+  endless?: boolean;
 }
 
 const BLUR_LEVELS = [80, 50, 30, 15, 5];
 
 const CHALK_TEXTURE = 'https://www.transparenttextures.com/patterns/black-chalk.png';
 
-export function CreditsGame({ movie, state, update }: Props) {
+export function CreditsGame({ movie, state, update, endless }: Props) {
   const gs = state.games.credits;
   const round = gs.round;
   const isMobile = useIsMobile();
@@ -44,13 +46,12 @@ export function CreditsGame({ movie, state, update }: Props) {
         g.completed = true;
         g.won = true;
         g.score = getScore(g.round);
-        updateStatsAfterGame(g.score);
-        updateGameStreak('credits', g.score, true);
+        if (!endless) { updateStatsAfterGame(g.score); updateGameStreak('credits', g.score, true); }
       } else if (g.round >= 5) {
         g.completed = true;
         g.won = false;
         g.score = 0;
-        updateGameStreak('credits', 0, false);
+        if (!endless) { updateGameStreak('credits', 0, false); }
       } else {
         g.round += 1;
       }
@@ -520,6 +521,10 @@ export function CreditsGame({ movie, state, update }: Props) {
             overview={movie.overview}
             movieTitle={movie.title}
           />
+        )}
+
+        {gs.completed && !endless && (
+          <PlayMoreButton gameType="credits" />
         )}
       </div>
     </div>

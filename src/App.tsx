@@ -7,6 +7,7 @@ import { Home } from './pages/Home';
 import { CreditsPage } from './pages/CreditsPage';
 import { PosterPage } from './pages/PosterPage';
 import { YearPage } from './pages/YearPage';
+import { EndlessPage } from './pages/EndlessPage';
 import { useIsMobile } from './hooks/useMediaQuery';
 
 export default function App() {
@@ -31,6 +32,7 @@ export default function App() {
             <Route path="/credits" element={<CreditsPage />} />
             <Route path="/poster" element={<PosterPage />} />
             <Route path="/year" element={<YearPage />} />
+            <Route path="/endless/:gameType" element={<EndlessPage />} />
           </Routes>
         </div>
       </div>

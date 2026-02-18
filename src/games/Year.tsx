@@ -4,6 +4,7 @@ import { getScore } from '../utils/scoring';
 import { updateStatsAfterGame, updateGameStreak } from '../utils/storage';
 import { useIsMobile } from '../hooks/useMediaQuery';
 import { NowStreaming } from '../components/NowStreaming';
+import { PlayMoreButton } from '../components/PlayMoreButton';
 import type { Movie } from '../types/movie';
 import type { DailyState } from '../utils/storage';
 
@@ -11,9 +12,10 @@ interface Props {
   movie: Movie;
   state: DailyState;
   update: (fn: (s: DailyState) => DailyState) => void;
+  endless?: boolean;
 }
 
-export function YearGame({ movie, state, update }: Props) {
+export function YearGame({ movie, state, update, endless }: Props) {
   const gs = state.games.year;
   const [inputYear, setInputYear] = useState('');
   const isMobile = useIsMobile();
@@ -33,13 +35,12 @@ export function YearGame({ movie, state, update }: Props) {
         g.completed = true;
         g.won = true;
         g.score = getScore(g.round);
-        updateStatsAfterGame(g.score);
-        updateGameStreak('year', g.score, true);
+        if (!endless) { updateStatsAfterGame(g.score); updateGameStreak('year', g.score, true); }
       } else if (g.round >= 5) {
         g.completed = true;
         g.won = false;
         g.score = 0;
-        updateGameStreak('year', 0, false);
+        if (!endless) { updateGameStreak('year', 0, false); }
       } else {
         g.round += 1;
       }
@@ -350,6 +351,10 @@ export function YearGame({ movie, state, update }: Props) {
             overview={movie.overview}
               movieTitle={movie.title}
             />
+          )}
+
+          {gs.completed && !endless && (
+            <PlayMoreButton gameType="year" />
           )}
         </div>
       </div>
