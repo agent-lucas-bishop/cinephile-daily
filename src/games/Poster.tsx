@@ -332,6 +332,10 @@ export function PosterGame({ movie, state, update, endless }: Props) {
             </motion.div>
           )}
 
+          {gs.completed && !endless && (
+            <PlayMoreButton gameType="poster" />
+          )}
+
           {gs.completed && (
             <NowStreaming
               providers={movie.watchProviders}
@@ -344,9 +348,7 @@ export function PosterGame({ movie, state, update, endless }: Props) {
             />
           )}
 
-          {gs.completed && !endless && (
-            <PlayMoreButton gameType="poster" />
-          )}
+          <div style={{ paddingBottom: 40 }} />
         </div>
       </div>
     </div>

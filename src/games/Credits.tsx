@@ -511,6 +511,10 @@ export function CreditsGame({ movie, state, update, endless }: Props) {
           </motion.div>
         )}
 
+        {gs.completed && !endless && (
+          <PlayMoreButton gameType="credits" />
+        )}
+
         {gs.completed && (
           <NowStreaming
             providers={movie.watchProviders}
@@ -523,9 +527,7 @@ export function CreditsGame({ movie, state, update, endless }: Props) {
           />
         )}
 
-        {gs.completed && !endless && (
-          <PlayMoreButton gameType="credits" />
-        )}
+        <div style={{ paddingBottom: 40 }} />
       </div>
     </div>
   );

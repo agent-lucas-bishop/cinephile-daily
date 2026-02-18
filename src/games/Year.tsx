@@ -341,6 +341,10 @@ export function YearGame({ movie, state, update, endless }: Props) {
             })}
           </div>
 
+          {gs.completed && !endless && (
+            <PlayMoreButton gameType="year" />
+          )}
+
           {gs.completed && (
             <NowStreaming
               providers={movie.watchProviders}
@@ -353,9 +357,7 @@ export function YearGame({ movie, state, update, endless }: Props) {
             />
           )}
 
-          {gs.completed && !endless && (
-            <PlayMoreButton gameType="year" />
-          )}
+          <div style={{ paddingBottom: 40 }} />
         </div>
       </div>
     </div>
